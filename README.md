@@ -2,132 +2,110 @@
 [![Issues][issues-badge]][issues-url]
 [![Gitter][gitter-badge]][gitter-url]
 
-Device Telemetry Overview
-==========================
+# Device Telemetry Overview
 
-This service offers read access to device telemetry, full CRUD for rules, and read/write for
-alarms from storage for the client via a RESTful endpoint.
+This service provides a RESTful endpoint for read access to device 
+telemetry, full CRUD for rules, and read/write for alarms from storage.
 
-## Features the microservice offers:
-1. Gets a list of telemetry messages for specific parameters
-1. Gets a list of alarms for specific parameters
-1. Gets a single alarm
-1. Modifies alarm status
-1. Create/Read/Update/Delete Rules
-    1. Create Rules
-    1. Gets a list of rules for specific parameters
-    1. Gets a single rule
-    1. Modify existing rule
-    1. Delete existing rule
+## Why?
 
-# Dependencies
-1. DocumentDB Storage
-1. [Storage Adapter Webservice](https://github.com/Azure/pcs-storage-adapter-dotnet)
+This microservice was built as part of the 
+[Azure IoT Remote Monitoring](https://github.com/Azure/azure-iot-pcs-remote-monitoring-dotnet) 
+project to provide a generic implementation for an end-to-end IoT solution. More information [here][rm-arch-url].
 
-How to use the microservice
-===========================
-## Quickstart - Running the service with Docker
+## Features
+* Gets a list of telemetry messages
+* Gets a list of alarms
+* Gets a single alarm
+* Modifies alarm status
+* Create/Read/Update/Delete Rules
 
-1. Create an instance of [Azure Document Db][documentdb-url]
-1. Follow the [Storage quickstart instructions][storageadapter-url]
-   for setting up the Storage Adapter microservice storage.
-1. Find your DocumentDb connection string. See
-   [See the tip here][azurestorageconnstring-url] if you
-   need help finding it.
-1. Store the "Document Db Connection string" in the [env-vars-setup](scripts)
-   script, then run the script. In MacOS/Linux the environment variables
-   need to be set in the same session where you run Docker Compose,
-   every time a new session is created.
-1. [Install Docker Compose][docker-compose-install-url]
-1. Start the Telemetry service using docker compose:
-   ```
-   cd scripts
-   cd docker
-   docker-compose up
-   ```
-1. Use an HTTP client such as [Postman][postman-url], to exercise the
-   [RESTful API][project-wiki]
+## Documentation
 
-## Local Setup
-### 1. Environment Variables
+* View the API documentation in the 
+[Wiki](https://github.com/Azure/device-telemetry-dotnet/wiki).
 
-Run `scripts\env-vars-setup.cmd` on Windows or `source scripts\env-vars-setup`
-on Mac/Linux to set up the environment variables needed to run the service locally.
-In Windows you can also set these [in your system][windows-envvars-howto-url].
+# How to use
 
-If using envornemnt variables, this service requires the following environment
-variables to be set:
-   1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Document Db connection string}
-   1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+## Running the service with Docker
+
+You can run the microservice and its dependencies using 
+[Docker](https://www.docker.com/) with the instructions [here][run-with-docker-url].
+
+## Running the service locally
+
+## Prerequisites
+### 1. Deploy Azure Services
+This service has a dependency on the following Azure resources. 
+Follow the instructions for 
+[Deploy the Azure services](https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#deploy-the-azure-services).
+* Cosmos DB
+
+### 2. Setup Dependencies
+
+This service depends on the following repository.
+1. [Storage Adapter Microservice](https://github.com/Azure/pcs-storage-adapter-dotnet)
+
+### 3. Environment variables required to run the service
+In order to run the service, some environment variables need to be created
+at least once. See specific instructions for IDE or command line setup below
+for more information. More information on environment variables 
+[here](#configuration-and-environment-variables).
+  * `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
+  * `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
 
 ## Running the service with Visual Studio
-
+1. Make sure the [Prerequisites](#prerequisites) are set up.
 1. Install any edition of [Visual Studio 2017][vs-install-url] or Visual
    Studio for Mac. When installing check ".NET Core" workload. If you
    already have Visual Studio installed, then ensure you have
    [.NET Core Tools for Visual Studio 2017][dotnetcore-tools-url]
    installed (Windows only).
-1. Create an instance of [Azure Document Db][documentdb-url]
-1. Follow the [Storage quickstart instructions][storageadapter-url]
-   for setting up and running the Storage Adapter microservice.
 1. Open the solution in Visual Studio
-1. Edit the WebService project properties, and
-   define the following required environment variables. In Windows
+1. Edit the WebService project properties by right clicking on the 
+Webservice project > Properties > Debug. Add following required environment
+variables to the Debug settings. In Windows
    you can also set these [in your system][windows-envvars-howto-url].
-   1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Document Db connection string}
+   1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
 1. In Visual Studio, start the WebService project
-1. Using an HTTP client like [Postman][postman-url],
-   use the [RESTful API][project-wiki]
+1. Using an HTTP client like [Postman][postman-url], use the 
+[RESTful API][project-wiki] to test out the service.
 
-## Project Structure
+## Running the service from the command line
 
-The solution contains the following projects and folders:
-
-* **Code** for the application is in app/com.microsoft.azure.iotsolutions.telemetry/
-    * **WebService** - ASP.NET Web API exposing a RESTful API for for managing Ruels,
-    Alarms, and Messages
-    * **Services** - Library containing common business logic for interacting with
-    storage and the StorageAdapter
-* **Tests** are in the test folder
-    * **WebService** - Tests for web services functionality
-    * **Service** - Tests for services functionality
-* **Scripts** - a folder containing scripts from the command line console,
-  to build and run the solution, and other frequent tasks.
-* **Routes** - defines the URL mapping to web service classes
-
-## Build and Run from the command line
-
-The [scripts](scripts) folder contains scripts for many frequent tasks:
-
-* `build`: compile all the projects and run the tests.
-* `compile`: compile all the projects.
-* `run`: compile the projects and run the service. This will prompt for
+1. Make sure the [Prerequisites](#prerequisites) are set up.
+1. Set the following environment variables in your system. 
+More information on environment variables 
+[here](#configuration-and-environment-variables).
+    1. `PCS_TELEMETRY_DOCUMENTDB_CONNSTRING` = {your Azure Cosmos DB connection string}
+    1. `PCS_STORAGEADAPTER_WEBSERVICE_URL` = http://localhost:9022/v1
+1. Use the scripts in the [scripts](scripts) folder for many frequent tasks:
+   * `build`: compile all the projects and run the tests.
+   * `compile`: compile all the projects.
+   * `run`: compile the projects and run the service. This will prompt for
   elevated privileges in Windows to run the web service.
 
-## Building a customized Docker image
+## Project Structure
+This microservice contains the following projects:
+* **WebService.csproj** - C# web service exposing REST interface for managing Ruels,
+    Alarms, and Messages
+* **WebService.Test.csproj** - Unit tests for web services functionality
+* **Services.csproj** - C# assembly containining business logic for interacting 
+with storage and the Storage Adapter microservice
+* **Services.Test.csproj** - Unit tests for services functionality
+* **Solution/scripts** - Contains build scripts, docker container creation scripts, 
+and scripts for running the microservice from the command line
 
-The `scripts` folder includes a [docker](scripts/docker) subfolder with the
-scripts required to package the service into a Docker image:
+## Updating the Docker image
 
-* `Dockerfile`: Docker image specifications
-* `build`: build a Docker image and store the image in the local registry
+The `scripts` folder includes a [docker](scripts/docker) subfolder with the files
+required to package the service into a Docker image:
+
+* `Dockerfile`: docker images specifications
+* `build`: build a Docker container and store the image in the local registry
 * `run`: run the Docker container from the image stored in the local registry
-* `content`: a folder with files copied into the image, including the entry
-  point script
-
-You can also start Device Telemetry and its dependencies in one simple step,
-using Docker Compose with the
-[docker-compose.yml](scripts/docker/docker-compose.yml) file in the project:
-
-```
-cd scripts
-cd docker
-docker-compose up
-```
-
-The Docker compose configuration requires the Storage and StorageAdapter web
-service URL environment variables, described previously.
+* `content`: a folder with files copied into the image, including the entry point script
 
 ## Configuration and Environment variables
 
@@ -157,28 +135,19 @@ the IDE, there are several ways to manage environment variables:
   * https://stackoverflow.com/questions/135688/setting-environment-variables-in-os-x
   * https://help.ubuntu.com/community/EnvironmentVariables
 
-Other resources
-===============
-
-* [Telemetry service API specs](wiki/%5BAPI-Specifications%5D-Service)
-* [Messages API specs](wiki/%5BAPI-Specifications%5D-Messages)
-* [Alarms API specs](wiki/%5BAPI-Specifications%5D-Alarms)
-* [Rules API specs](wiki/%5BAPI-Specifications%5D-Rules)
-
-Contributing to the solution
-============================
+# Contributing to the solution
 
 Please follow our [contribution guidelines](CONTRIBUTING.md).  We love PRs too.
 
-Troubleshooting
-===============
+# Feedback
 
-{TODO}
+Please enter issues, bugs, or suggestions as 
+[GitHub Issues](https://github.com/Azure/device-telemetry-dotnet/issues).
 
-Feedback
-==========
+# License
 
-Please enter issues, bugs, or suggestions as GitHub Issues here: https://github.com/Azure/device-telemetry-dotnet/issues.
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the [MIT](LICENSE) License.
 
 [build-badge]: https://img.shields.io/travis/Azure/device-telemetry-dotnet.svg
 [build-url]: https://travis-ci.org/Azure/device-telemetry-dotnet
@@ -186,13 +155,11 @@ Please enter issues, bugs, or suggestions as GitHub Issues here: https://github.
 [issues-url]: https://github.com/azure/device-telemetry-dotnet/issues
 [gitter-badge]: https://img.shields.io/gitter/room/azure/iot-solutions.js.svg
 [gitter-url]: https://gitter.im/azure/iot-solutions
-
 [project-wiki]: https://github.com/Azure/device-telemetry-dotnet/wiki/%5BAPI-Specifications%5D-Messages
-[documentdb-url]: https://docs.microsoft.com/en-us/azure/cosmos-db/create-documentdb-dotnet
-[storageadapter-url]: https://github.com/Azure/pcs-storage-adapter-dotnet/blob/master/README.md
-[azurestorageconnstring-url]: https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#create-a-connection-string-for-an-azure-storage-account
 [postman-url]: https://www.getpostman.com
 [vs-install-url]: https://www.visualstudio.com/downloads
 [dotnetcore-tools-url]: https://www.microsoft.com/net/core#windowsvs2017
 [windows-envvars-howto-url]: https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10
 [docker-compose-install-url]: https://docs.docker.com/compose/install
+[run-with-docker-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-deploy-local#run-the-microservices-in-docker
+[rm-arch-url]:https://docs.microsoft.com/azure/iot-suite/iot-suite-remote-monitoring-sample-walkthrough
