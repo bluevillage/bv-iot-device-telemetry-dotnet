@@ -18,9 +18,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "ETag")]
         public string ETag { get; set; } = string.Empty;
 
-        [JsonProperty(PropertyName = "Email")]
-        public string Email { get; set; } = string.Empty;
-
         [JsonProperty(PropertyName = "Phone")]
         public PhoneNumberModel Phone { get; set; }
 
@@ -66,6 +63,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
         };
 
+        [JsonProperty(PropertyName = "Email")]
+        public string Email {get; set;} = string.Empty;
+
         public RuleApiModel() { }
 
         public RuleApiModel(Rule rule)
@@ -83,6 +83,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Severity = rule.Severity.ToString();
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
+                this.Email = rule.emailAddress;
 
                 foreach (Condition condition in rule.Conditions)
                 {
@@ -127,7 +128,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 Severity = severity,
                 Calculation = calculation,
                 TimePeriod = timePeriod,
-                Conditions = conditions
+                Conditions = conditions,
+                emailAddress = Email
             };
         }
     }

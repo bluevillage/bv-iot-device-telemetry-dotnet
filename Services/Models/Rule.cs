@@ -30,6 +30,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         public long TimePeriod { get; set; } = 0;
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
 
+        // public int phoneNumber {get; set;} = 0;
+
+        public string emailAddress {get; set;} = String.Empty;
+
         public Rule() { }
 
         public int CompareTo(Rule other)

@@ -19,7 +19,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
     public class AlarmsController : Controller
     {
         private const int LIMIT = 200;
-
+        private static int redirect_counter = 0;
         private readonly IAlarms alarmService;
         private readonly ILogger log;
 
@@ -70,9 +70,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             return new AlarmListApiModel(alarmsList);
         }
 
-        [HttpGet("{id}")]
-        public AlarmApiModel Get([FromRoute] string id)
+        [HttpGet("{id}/{redirect?}")]
+        public AlarmApiModel Get([FromRoute] string id,
+                                            Boolean isRedirect = false)
         {
+            if (isRedirect) redirect_counter++;
             Alarm alarm = this.alarmService.Get(id);
             return new AlarmApiModel(alarm);
         }
