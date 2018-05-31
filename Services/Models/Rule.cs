@@ -29,11 +29,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         // Possible values -[60000, 300000, 600000] in milliseconds
         public long TimePeriod { get; set; } = 0;
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
-
-        // Adding attributes for alert-notification.
-        public string emailAddress {get; set;} = String.Empty;
-
-        public PhoneNumber phoneNumber { get; set; } = new PhoneNumber();
+        public IList<ActionItem> Actions {get; set;} = new List<ActionItem>();
 
         /*
          * Property to support a list of emails.

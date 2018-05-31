@@ -61,11 +61,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         };
 
         // Adding Alert Notification attributes.
-        [JsonProperty(PropertyName = "Email")]
-        public string Email {get; set;} = string.Empty;
-
-        [JsonProperty(PropertyName = "Phone")]
-        public PhoneNumberApiModel Phone { get; set; } = new PhoneNumberApiModel();
+        [JsonProperty(PropertyName = "Actions")]
+        public List<ActionItemApiModel> Actions {get; set;} = new List<ActionItemApiModel>();
 
         /*
          * // JsonProperty for a list of emails.
@@ -90,9 +87,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Severity = rule.Severity.ToString();
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
-                this.Email = rule.emailAddress;
-                this.Phone = new PhoneNumberApiModel(rule.phoneNumber);
                 // this.EmailAddressList = rule.EmailAddressList;
+                foreach(ActionItem item in rule.Actions){
+                    this.Actions.Add(new ActionItemApiModel(item));
+                }
 
                 foreach (Condition condition in rule.Conditions)
                 {
@@ -104,9 +102,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public Rule ToServiceModel()
         {
             List<Condition> conditions = new List<Condition>();
+            List<ActionItem> actions = new List<ActionItem>();
             foreach (ConditionApiModel condition in this.Conditions)
             {
                 conditions.Add(condition.ToServiceModel());
+            }
+
+            foreach (ActionItemApiModel act in this.Actions)
+            {
+                actions.Add(act.ToServiceModel());
             }
 
             if (!Enum.TryParse<CalculationType>(this.Calculation, true, out CalculationType calculation))
@@ -138,8 +142,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 Calculation = calculation,
                 TimePeriod = timePeriod,
                 Conditions = conditions,
-                emailAddress = Email,
-                phoneNumber = this.Phone.ToServiceModel(),
+                Actions = actions
                 // EmailAddressList = this.EmailAddressList
             };
         }
