@@ -18,9 +18,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "ETag")]
         public string ETag { get; set; } = string.Empty;
 
-        [JsonProperty(PropertyName = "Phone")]
-        public PhoneNumberModel Phone { get; set; }
-
         [JsonProperty(PropertyName = "Id")]
         public string Id { get; set; } = string.Empty;
 
@@ -63,8 +60,18 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
         };
 
+        // Adding Alert Notification attributes.
         [JsonProperty(PropertyName = "Email")]
         public string Email {get; set;} = string.Empty;
+
+        [JsonProperty(PropertyName = "Phone")]
+        public PhoneNumberApiModel Phone { get; set; } = new PhoneNumberApiModel();
+
+        /*
+         * // JsonProperty for a list of emails.
+        [JsonProperty(PropertyName ="EmailAddresses")]
+        public IList<string> EmailAddressList { get; set; } = new List<string>();
+        */
 
         public RuleApiModel() { }
 
@@ -84,6 +91,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
                 this.Email = rule.emailAddress;
+                this.Phone = new PhoneNumberApiModel(rule.phoneNumber);
+                // this.EmailAddressList = rule.EmailAddressList;
 
                 foreach (Condition condition in rule.Conditions)
                 {
@@ -129,7 +138,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 Calculation = calculation,
                 TimePeriod = timePeriod,
                 Conditions = conditions,
-                emailAddress = Email
+                emailAddress = Email,
+                phoneNumber = this.Phone.ToServiceModel(),
+                // EmailAddressList = this.EmailAddressList
             };
         }
     }

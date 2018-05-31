@@ -30,9 +30,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         public long TimePeriod { get; set; } = 0;
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
 
-        // public int phoneNumber {get; set;} = 0;
-
+        // Adding attributes for alert-notification.
         public string emailAddress {get; set;} = String.Empty;
+
+        public PhoneNumber phoneNumber { get; set; } = new PhoneNumber();
+
+        /*
+         * Property to support a list of emails.
+        public IList<string> EmailAddressList { get; set; } = new List<string>();
+        */
 
         public Rule() { }
 
