@@ -9,12 +9,20 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
+
     public class RuleApiModel
     {
+
         private const string DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:sszzz";
 
         [JsonProperty(PropertyName = "ETag")]
         public string ETag { get; set; } = string.Empty;
+
+        [JsonProperty(PropertyName = "Email")]
+        public string Email { get; set; } = string.Empty;
+
+        [JsonProperty(PropertyName = "Phone")]
+        public PhoneNumberModel Phone { get; set; }
 
         [JsonProperty(PropertyName = "Id")]
         public string Id { get; set; } = string.Empty;
