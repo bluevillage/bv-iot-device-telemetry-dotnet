@@ -13,8 +13,8 @@
       "launchBrowser": true,
       "launchUrl": "http://localhost:9004/v1/status",
       "environmentVariables": {
-        "PCS_TELEMETRY_DOCUMENTDB_CONNSTRING": "$(PCS_TELEMETRY_DOCUMENTDB_CONNSTRING)",
-        "PCS_STORAGEADAPTER_WEBSERVICE_URL": "http://localhost:9022/v1"
+        "PCS_STORAGEADAPTER_WEBSERVICE_URL": "http://localhost:9022/v1",
+        "PCS_TELEMETRY_DOCUMENTDB_CONNSTRING": "AccountEndpoint=https://ag-demoa070e.documents.azure.com:443/;AccountKey=gPQ4hZLtWPt05mHCWQnXborgP8uK7zgA9YUeKu74rnsjrhhP8wV2dZgewny76zCSf8jw22h70RjnJNTwzt5uOg==;"
       }
     },
     "WebService": {
@@ -22,8 +22,8 @@
       "launchBrowser": true,
       "launchUrl": "http://localhost:9004/v1/status",
       "environmentVariables": {
-        "PCS_TELEMETRY_DOCUMENTDB_CONNSTRING": "$(PCS_TELEMETRY_DOCUMENTDB_CONNSTRING)",
-        "PCS_STORAGEADAPTER_WEBSERVICE_URL": "http://localhost:9022/v1"
+        "PCS_STORAGEADAPTER_WEBSERVICE_URL": "http://localhost:9022/v1",
+        "PCS_TELEMETRY_DOCUMENTDB_CONNSTRING": "$(PCS_TELEMETRY_DOCUMENTDB_CONNSTRING)"
       },
       "applicationUrl": "http://localhost:9004/v1/status"
     }
