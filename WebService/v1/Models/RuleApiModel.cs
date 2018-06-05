@@ -64,6 +64,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "Actions")]
         public List<ActionItemApiModel> Actions {get; set;} = new List<ActionItemApiModel>();
 
+        [JsonProperty(PropertyName = "ActionTemplate")]
+        public ActionItemTemplateApiModel ActionTemplate { get; set; } = new ActionItemTemplateApiModel();
+        //Add json property for template as string.
+
         /*
          * // JsonProperty for a list of emails.
         [JsonProperty(PropertyName ="EmailAddresses")]
@@ -87,7 +91,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Severity = rule.Severity.ToString();
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
-                // this.EmailAddressList = rule.EmailAddressList;
+                this.ActionTemplate = new ActionItemTemplateApiModel(rule.ActionTemplate);
                 foreach(ActionItem item in rule.Actions){
                     this.Actions.Add(new ActionItemApiModel(item));
                 }
@@ -142,7 +146,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 Calculation = calculation,
                 TimePeriod = timePeriod,
                 Conditions = conditions,
-                Actions = actions
+                Actions = actions,
+                ActionTemplate = this.ActionTemplate.ToServiceModel()
+                // Assign the value of template to the service model.
                 // EmailAddressList = this.EmailAddressList
             };
         }
