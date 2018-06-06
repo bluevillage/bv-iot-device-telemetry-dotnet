@@ -33,6 +33,10 @@ namespace Services.Test
             this.alarms = new Alarms(servicesConfig, this.storageClient.Object, this.logger.Object);
         }
 
+        /**
+         * Verify basic behavior of delete alarms by rule.
+         * Verify document will be deleted when delete by rule is called, with no errors.
+         */
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void BasicDeleteByRule()
         {
@@ -53,16 +57,21 @@ namespace Services.Test
             Guid guid = Guid.NewGuid();
 
             // Act
-            this.alarms.StartDeleteByRule("test", null, null, null, 0, 1000, new string[0], guid).Wait();
+            this.alarms.StartDeleteByRuleAsync("test", null, null, null, 0, 1000, new string[0], guid).Wait();
 
             // Assert
+            // Document was deleted once
             this.storageClient.Verify(x => x.DeleteDocumentAsync("database", "collection", "test"), Times.Once);
+            // Status was updated at least 3 times--on start, after query, after delete finished
             this.storageClient.Verify(x => x.UpsertDocumentAsync("database", "collection", It.IsAny<DeleteStatus>()), Times.AtLeast(3));
 
-            this.logger.Verify(l => l.Error(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Never);
-            this.logger.Verify(l => l.Warn(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Never);
+            this.VerifyNoErrorsOrWarnings();
         }
 
+        /**
+         * Verify transient failure behavior of delete alarms by rule.
+         * Verify if delete fails once it will retry.
+         */
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void DeleteByRuleTransientFailure()
         {
@@ -84,16 +93,19 @@ namespace Services.Test
             Guid guid = Guid.NewGuid();
 
             // Act
-            this.alarms.StartDeleteByRule("test", null, null, null, 0, 1000, new string[0], guid).Wait();
+            this.alarms.StartDeleteByRuleAsync("test", null, null, null, 0, 1000, new string[0], guid).Wait();
 
             // Assert
             this.storageClient.Verify(x => x.DeleteDocumentAsync("database", "collection", "test"), Times.Exactly(2));
             this.storageClient.Verify(x => x.UpsertDocumentAsync("database", "collection", It.IsAny<DeleteStatus>()), Times.AtLeast(3));
-
-            this.logger.Verify(l => l.Error(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Never);
-            this.logger.Verify(l => l.Warn(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Once);
+            
+            this.VerifyNoErrorsOrWarnings();
         }
 
+        /**
+         * Verify failure behavior of delete alarms by rule.
+         * Verify if delete fails 3 times an error will be logged and method will exit.
+         */
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void DeleteByRuleFailsAfter3Exceptions()
         {
@@ -117,7 +129,7 @@ namespace Services.Test
             Guid guid = Guid.NewGuid();
 
             // Act
-            this.alarms.StartDeleteByRule("test", null, null, null, 0, 1000, new string[0], guid).Wait();
+            this.alarms.StartDeleteByRuleAsync("test", null, null, null, 0, 1000, new string[0], guid).Wait();
 
             // Assert
             this.storageClient.Verify(x => x.DeleteDocumentAsync("database", "collection", "test"), Times.Exactly(3));
@@ -127,6 +139,11 @@ namespace Services.Test
             this.logger.Verify(l => l.Warn(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Exactly(2));
         }
 
+        /**
+         * Verify basic behavior of get delete status.
+         * If delete status is success, will return success along with
+         * other metadata (timestamp, number of rules deleted).
+         */
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void GetDeleteStatusIfCompleted()
         {
@@ -149,6 +166,11 @@ namespace Services.Test
             this.VerifyNoErrorsOrWarnings();
         }
 
+        /**
+         * Verify get delete status behavior if the in progress record
+         * is too old. If in progress record is more than a minute old,
+         * should return unknown status.
+         */
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void GetDeleteStatusIfInProgressOutOfDate()
         {
@@ -175,6 +197,11 @@ namespace Services.Test
             this.VerifyNoErrorsOrWarnings();
         }
 
+
+        /**
+         * Verify if do not find status record for get delete
+         * status, will return unknown status.
+         */
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void GetDeleteStatusIfNoRecord()
         {
@@ -195,6 +222,10 @@ namespace Services.Test
             this.VerifyNoErrorsOrWarnings();
         }
 
+        /**
+         * Returns Cosmos DB Document object in format of a DeleteStatus object, with the
+         * given id, timestamp, status, and recordsDeleted
+         */
         private Document CreateFakeDocument(string id, DateTime timestamp, string status, int recordsDeleted)
         {
             Document document = new Document();
@@ -205,6 +236,9 @@ namespace Services.Test
             return document;
         }
 
+        /**
+         * Set up storage client to return given list of documents on QueryDocuments
+         */
         private void SetUpStorageClientQueryResults(List<Document> documentResults)
         {
             this.storageClient.Setup(x => x.QueryDocuments(
@@ -217,6 +251,9 @@ namespace Services.Test
                 .Returns(documentResults);
         }
 
+        /**
+         * Verify logger was never called for an error or a warning
+         */
         private void VerifyNoErrorsOrWarnings()
         {
             this.logger.Verify(l => l.Error(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Never);

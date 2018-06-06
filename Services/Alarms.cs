@@ -45,7 +45,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
         Task<Alarm> UpdateAsync(string id, string status);
 
-        Task StartDeleteByRule(
+        Task StartDeleteByRuleAsync(
             string id,
             DateTimeOffset? from,
             DateTimeOffset? to,
@@ -182,7 +182,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             return alarms;
         }
 
-        public async Task StartDeleteByRule(
+        public async Task StartDeleteByRuleAsync(
             string id,
             DateTimeOffset? from,
             DateTimeOffset? to,
@@ -211,7 +211,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 this.log.Error("Could not write initial delete status", () => new { e.Message });
             }
 
-            await Task.Run(() => this.DeleteByRule(id, from, to, order, skip, limit, devices, operationId));
+            await Task.Run(() => this.DeleteByRuleAsync(id, from, to, order, skip, limit, devices, operationId));
 
         }
 
@@ -261,6 +261,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             return new Alarm(document);
         }
 
+        /**
+         * Returns status of delete by rule operation with the given id.
+         * If the operation id is not found or if the status is "In Progress"
+         * or "Started" and has not updated for DELETE_STATUS_UPDATE_INTERVAL_MS * 2,
+         * return an unkown status
+         */
         public string GetDeleteByRuleStatus(string id)
         {
             Document document = this.GetDocumentById(id);
@@ -283,7 +289,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             return status.ToString();
         }
 
-        private async Task DeleteByRule(
+        /**
+         * Query for list of alarms based on given rule id and other
+         * query parameters and delete all alarms. This operation may take
+         * a long time depending on how many alarms there are. Operation status
+         * will be written to storage every DELETE_STATUS_UPDATE_INTERVAL_MS milliseconds.
+         */
+        private async Task DeleteByRuleAsync(
             string id,
             DateTimeOffset? from,
             DateTimeOffset? to,
@@ -312,7 +324,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                     throw new ResourceNotFoundException("No alarms found");
                 }
 
-                await this.WriteIntermediateDeleteStatus(operationId.ToString(), 0, docs.Count);
+                await this.WriteIntermediateDeleteStatusAsync(operationId.ToString(), 0, docs.Count);
 
                 this.DeleteAlarms(docs, out deletedCount, operationId.ToString());
             }
@@ -321,7 +333,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 this.log.Error("Exception deleting alarms", () => new { e.Message });
                 exception = e;
             }
-            await this.WriteDeleteStatus(operationId.ToString(), deletedCount, exception);
+            await this.WriteDeleteStatusAsync(operationId.ToString(), deletedCount, exception);
         }
 
 
@@ -346,6 +358,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             return null;
         }
 
+        /**
+         * Delete given list of documents from storage.
+         * Documents will be deleted in batches sized based on ServicesConfig.
+         * If there is a delete failure, batch will retry up to max retry count
+         * (defined in Services Config).
+         * Intermediate delete status will be written to storage every
+         * DELETE_STATUS_UPDATE_INTERVAL_MS milliseconds.
+         */
         private void DeleteAlarms(List<Document> alarms, out int deletedCount, string operationId)
         {
             Stopwatch batchStopwatch = new Stopwatch();
@@ -381,7 +401,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                         deletedCount += toDelete;
                         if (progressStopwatch.ElapsedMilliseconds > DELETE_STATUS_UPDATE_INTERVAL_MS)
                         {
-                            this.WriteIntermediateDeleteStatus(operationId, deletedCount, alarms.Count - deletedCount).Wait();
+                            this.WriteIntermediateDeleteStatusAsync(operationId, deletedCount, alarms.Count - deletedCount).Wait();
                             progressStopwatch.Restart();
                         }
                     }
@@ -415,6 +435,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
         }
 
+        /**
+         * Build document query and query storage client for list of documents
+         */
         private List<Document> GetListOfDocuments(string id,
             DateTimeOffset? from,
             DateTimeOffset? to,
@@ -449,6 +472,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 limit);
         }
 
+        /**
+         * Verify id does not contain any invalid characters. Throw exception if it does
+         */
         private void VerifyId(string id)
         {
             if (Regex.IsMatch(id, INVALID_CHARACTER))
@@ -457,6 +483,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
         }
 
+        /**
+         * Return DeleteStatus with given id and status "Unknown"
+         */
         private DeleteStatus CreateUnknownStatus(string id)
         {
             return new DeleteStatus
@@ -466,7 +495,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             };
         }
 
-        private async Task WriteDeleteStatus(string id, int deletedCount, Exception e)
+        /**
+         * Create delete status with given id and deletedCount and current timestamp.
+         * If there was nothing to delete status is "Nothing to Delete".
+         * If request failed status is "Failed"
+         * Otherwise status is "Success".
+         * Write this delete status to storage.
+         */
+        private async Task WriteDeleteStatusAsync(string id, int deletedCount, Exception e)
         {
             try
             {
@@ -495,7 +531,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             }
         }
 
-        private async Task WriteIntermediateDeleteStatus(string id, int deletedCount, int toDelete)
+        /**
+         * Write in progress status to storage with given id, deleted count and number of records
+         * left to delete.
+         */
+        private async Task WriteIntermediateDeleteStatusAsync(string id, int deletedCount, int toDelete)
         {
             try
             {

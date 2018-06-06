@@ -156,7 +156,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             }
 
             var operationId = Guid.NewGuid();
-            this.alarmService.StartDeleteByRule(id,
+            this.alarmService.StartDeleteByRuleAsync(id,
                     fromDate,
                     toDate,
                     order,
@@ -164,11 +164,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
                     limit,
                     deviceIds,
                     operationId);
-            string body = $"OperationId: {operationId.ToString()}";
+            string body = $"{{\"OperationId\": \"{operationId.ToString()}\"}}";
             var bytes = Encoding.UTF8.GetBytes(body);
             this.Response.StatusCode = 202;
             this.Response.ContentLength = bytes.Length;
-            this.Response.ContentType = "text/plain";
+            this.Response.ContentType = "application/json";
             this.Response.Body.Write(bytes, 0, bytes.Length);
         }
 
@@ -178,7 +178,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Controllers
             string status = this.alarmService.GetDeleteByRuleStatus(id);
             var bytes = Encoding.UTF8.GetBytes(status);
             this.Response.ContentLength = bytes.Length;
-            this.Response.ContentType = "text/plain";
+            this.Response.ContentType = "application/json";
             this.Response.Body.Write(bytes, 0, bytes.Length);
         }
     }

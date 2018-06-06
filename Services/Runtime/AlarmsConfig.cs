@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
+﻿// Copyright (c) Microsoft. All rights reserved.
+
+namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 {
     public class AlarmsConfig
     {

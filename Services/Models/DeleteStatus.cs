@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft. All rights reserved.
+
+using System;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
 
+/**
+ * Stores data for status of delete operation
+ */
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 {
     public class DeleteStatus
@@ -17,7 +20,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         public DateTime? Timestamp { get; set; }
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int? RecordsLeftToDelete { get; set; }
-        
+
         public DeleteStatus() { }
 
         public DeleteStatus(Document doc)
