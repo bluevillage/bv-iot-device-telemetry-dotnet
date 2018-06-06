@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -376,16 +377,17 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             {
                 int retryCount = 0;
                 bool success = false;
+                int start = i * this.deleteBatchSize;
+                int end = start + this.deleteBatchSize > alarms.Count
+                    ? alarms.Count
+                    : start + this.deleteBatchSize;
+                int toDelete = end - start;
+                Task[] taskList = new Task[toDelete];
+
                 while (!success && retryCount < this.maxRetryCount)
                 {
                     try
                     {
-                        int start = i * this.deleteBatchSize;
-                        int end = start + this.deleteBatchSize > alarms.Count 
-                            ? alarms.Count 
-                            : start + this.deleteBatchSize;
-                        int toDelete = end - start;
-                        Task[] taskList = new Task[toDelete];
                         batchStopwatch.Restart();
                         for (int j = start; j < end; j++)
                         {
@@ -409,7 +411,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                     catch (Exception e)
                     {
                         retryCount++;
-                        if (retryCount == this.maxRetryCount)
+                        bool allNotFound = this.AreAllExceptionsNotFound(e, out TimeSpan retryTimeSpan);
+                        
+                        // If all exceptions are not found exceptions, treat as success. 
+                        // Already were deleted.
+                        if (allNotFound)
+                        {
+                            success = true;
+                            deletedCount += toDelete;
+                        }
+                        else if (retryCount == this.maxRetryCount)
                         {
                             this.log.Error("Failed to delete batch of alarms", () => new { e.InnerException });
                             throw e;
@@ -417,12 +428,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                         else
                         {
                             this.log.Warn("Exception on delete", () => new { e.InnerException });
-                        }
-
-                        if (e.InnerException != null && e.InnerException.GetType() == typeof(DocumentClientException))
-                        {
-                            DocumentClientException exception = (DocumentClientException)e.InnerException;
-                            Thread.Sleep(exception.RetryAfter);
+                            Thread.Sleep(retryTimeSpan);
                         }
                     }
                 }
@@ -554,6 +560,42 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             {
                 this.log.Error("Error writing intermediate delete status to Cosmos DB", () => new { exception.Message });
             }
+        }
+
+        /**
+         * If given exception is an aggregate exception, check if all inner exceptions have
+         * status code Not Found. If they do, return true, otherwise return false.
+         * If an inner exception is a DocumentClientException that is not a Not Found,
+         * store its recommended retry time in retryTimeSpan. Otherwise set retry time to 0.
+         */
+        private bool AreAllExceptionsNotFound(Exception exception, out TimeSpan retryTimeSpan)
+        {
+            retryTimeSpan = TimeSpan.Zero;
+            if (exception.GetType() == typeof(AggregateException))
+            {
+                AggregateException aggregateException = (AggregateException) exception;
+                foreach (Exception innerException in aggregateException.InnerExceptions)
+                {
+                    if (innerException.GetType() == typeof(DocumentClientException))
+                    {
+                        DocumentClientException documentClientException = (DocumentClientException) innerException;
+
+                        // Ignore not found exception. Possible on retry already deleted some of the batch
+                        if (documentClientException.StatusCode != HttpStatusCode.NotFound)
+                        {
+                            return false;
+                        }
+
+                        retryTimeSpan = documentClientException.RetryAfter;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 }
