@@ -98,8 +98,9 @@ namespace Services.Test
             // Assert
             this.storageClient.Verify(x => x.DeleteDocumentAsync("database", "collection", "test"), Times.Exactly(2));
             this.storageClient.Verify(x => x.UpsertDocumentAsync("database", "collection", It.IsAny<DeleteStatus>()), Times.AtLeast(3));
-            
-            this.VerifyNoErrorsOrWarnings();
+
+            this.logger.Verify(l => l.Error(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Never);
+            this.logger.Verify(l => l.Warn(It.IsAny<string>(), It.IsAny<Func<object>>()), Times.Exactly(1));
         }
 
         /**
