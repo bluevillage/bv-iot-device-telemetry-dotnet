@@ -11,7 +11,6 @@ using Microsoft.Azure.Documents.SystemFunctions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 {
@@ -38,8 +37,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string colId,
             FeedOptions queryOptions,
             string queryString,
-            int skip,
-            int limit);
+            int? skip,
+            int? limit);
 
         int QueryCount(
             string databaseName,
@@ -213,8 +212,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             string colId,
             FeedOptions queryOptions,
             string queryString,
-            int skip,
-            int limit)
+            int? skip,
+            int? limit)
         {
             if (queryOptions == null)
             {
@@ -233,9 +232,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                     collectionLink,
                     queryString,
                     queryOptions)
-                .AsEnumerable()
-                .Skip(skip)
-                .Take(limit);
+                .AsEnumerable();
+            if (skip.HasValue)
+            {
+                queryResults = queryResults.Skip(skip.Value);
+            }
+
+            if (limit.HasValue)
+            {
+                queryResults = queryResults.Take(limit.Value);
+            }
 
             foreach (Document doc in queryResults)
             {
@@ -272,7 +278,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
             if (resultList.Length > 0)
             {
-                return (int) resultList[0];
+                return (int)resultList[0];
             }
 
             this.log.Info("No results found for count query", () => new { databaseName, colId, queryString });

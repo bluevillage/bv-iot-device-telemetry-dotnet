@@ -36,6 +36,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
         private const string ALARMS_DB_KEY = "TelemetryService:Alarms:";
         private const string ALARMS_DB_DATABASE_KEY = ALARMS_DB_KEY + "database";
         private const string ALARMS_DB_COLLECTION_KEY = ALARMS_DB_KEY + "collection";
+        private const string ALARMS_DB_MAX_RETRIES = ALARMS_DB_KEY + "max_retries";
+        private const string ALARMS_DB_DELETE_BATCH_SIZE = ALARMS_DB_KEY + "delete_batch_size";
+        private const string ALARMS_DB_DELETE_INTERVAL_MSEC = ALARMS_DB_KEY + "delete_interval_msec";
 
         private const string STORAGE_ADAPTER_KEY = "StorageAdapterService:";
         private const string STORAGE_ADAPTER_API_URL_KEY = STORAGE_ADAPTER_KEY + "webservice_url";
@@ -65,9 +68,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.Runtime
                 MessagesConfig = new StorageConfig(
                     configData.GetString(MESSAGES_DB_DATABASE_KEY),
                     configData.GetString(MESSAGES_DB_COLLECTION_KEY)),
-                AlarmsConfig = new StorageConfig(
+                AlarmsConfig = new AlarmsConfig(
                     configData.GetString(ALARMS_DB_DATABASE_KEY),
-                    configData.GetString(ALARMS_DB_COLLECTION_KEY)),
+                    configData.GetString(ALARMS_DB_COLLECTION_KEY),
+                    configData.GetInt(ALARMS_DB_MAX_RETRIES),
+                    configData.GetInt(ALARMS_DB_DELETE_BATCH_SIZE),
+                    configData.GetInt(ALARMS_DB_DELETE_INTERVAL_MSEC)),
                 StorageType = configData.GetString(STORAGE_TYPE_KEY),
                 DocumentDbConnString = configData.GetString(DOCUMENTDB_CONNSTRING_KEY),
                 DocumentDbThroughput = configData.GetInt(DOCUMENTDB_RUS_KEY),

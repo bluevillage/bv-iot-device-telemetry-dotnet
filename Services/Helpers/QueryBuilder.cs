@@ -3,7 +3,6 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Azure.Amqp;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
@@ -22,13 +21,20 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string toProperty,
             string order,
             string orderProperty,
-            int skip,
-            int limit,
+            int? skip,
+            int? limit,
             string[] devices,
             string devicesProperty)
         {
             var queryBuilder = new StringBuilder();
-            queryBuilder.Append("SELECT TOP " + (skip + limit) + " * FROM c WHERE (c[`doc.schema`] = `" + schemaName + "`");
+            if (skip.HasValue && limit.HasValue)
+            {
+                queryBuilder.Append("SELECT TOP " + (skip + limit) + " * FROM c WHERE (c[`doc.schema`] = `" + schemaName + "`");
+            }
+            else
+            {
+                queryBuilder.Append("SELECT * FROM c WHERE (c[`doc.schema`] = `" + schemaName + "`");
+            }
 
             if (devices.Length > 0)
             {
@@ -76,7 +82,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] devices,
             string devicesProperty,
             string[] filterValues,
-            string filterProperty) 
+            string filterProperty)
         {
             var validateDeviceIds = string.Join(",", devices);
             var validateFilters = string.Join(",", filterValues);

@@ -242,7 +242,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             Rule savedRule = null;
             try
             {
-                savedRule = await GetAsync(rule.Id);
+                savedRule = await this.GetAsync(rule.Id);
             }
             catch (ResourceNotFoundException e)
             {
@@ -252,7 +252,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
 
             if (savedRule == null)
             {
-                return await CreateAsync(rule);
+                return await this.CreateAsync(rule);
             }
 
             rule.DateCreated = savedRule.DateCreated;

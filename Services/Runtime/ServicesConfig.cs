@@ -11,7 +11,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
         string StorageAdapterApiUrl { get; set; }
         int StorageAdapterApiTimeout { get; set; }
         StorageConfig MessagesConfig { get; set; }
-        StorageConfig AlarmsConfig { get; set; }
+        AlarmsConfig AlarmsConfig { get; set; }
         string StorageType { get; set; }
         Uri DocumentDbUri { get; }
         string DocumentDbKey { get; }
@@ -26,7 +26,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime
 
         public StorageConfig MessagesConfig { get; set; }
 
-        public StorageConfig AlarmsConfig { get; set; }
+        public AlarmsConfig AlarmsConfig { get; set; }
 
         public string StorageType { get; set; }
 
