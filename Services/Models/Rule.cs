@@ -30,7 +30,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         public long TimePeriod { get; set; } = 0;
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
         public IList<ActionItem> Actions { get; set; } = new List<ActionItem>();
-        public ActionItemTemplate ActionTemplate { get; set; } = new ActionItemTemplate();
 
         /*
          * Property to support a list of emails.

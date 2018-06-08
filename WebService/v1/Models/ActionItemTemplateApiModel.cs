@@ -11,6 +11,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
     public class ActionItemTemplateApiModel
     {
 
+        [JsonProperty(PropertyName = "TemplateString")]
         public string TemplateString { get; set; } = String.Empty;
 
 
