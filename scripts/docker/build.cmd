@@ -49,7 +49,7 @@ cd %APP_HOME%
     copy scripts\docker\content\run.sh              out\docker\
 
     cd out\docker\
-    docker build --compress --tag %DOCKER_TAG% --label "%DOCKER_LABEL2%" .
+    docker build --compress --disable-content-trust --tag %DOCKER_TAG% --label "%DOCKER_LABEL2%" .
 
     IF %ERRORLEVEL% NEQ 0 GOTO FAIL
 
