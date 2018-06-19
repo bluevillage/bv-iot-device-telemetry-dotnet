@@ -51,6 +51,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "TimePeriod")]
         public string TimePeriod { get; set; } = "0";
 
+        [JsonProperty(PropertyName = "Actions")]
+        public List<ActionItemApiModel> Actions { get; set; } = new List<ActionItemApiModel>();
+
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public IDictionary<string, string> Metadata => new Dictionary<string, string>
         {
@@ -76,6 +79,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
 
+                foreach(ActionItem item in rule.Actions)
+                {
+                    this.Actions.Add(new ActionItemApiModel(item));
+                }
+
                 foreach (Condition condition in rule.Conditions)
                 {
                     this.Conditions.Add(new ConditionApiModel(condition));
@@ -86,9 +94,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public Rule ToServiceModel()
         {
             List<Condition> conditions = new List<Condition>();
+            List<ActionItem> actions = new List<ActionItem>();
+
             foreach (ConditionApiModel condition in this.Conditions)
             {
                 conditions.Add(condition.ToServiceModel());
+            }
+
+            foreach(ActionItemApiModel act  in this.Actions)
+            {
+                actions.Add(act.ToServiceModel());
             }
 
             if (!Enum.TryParse<CalculationType>(this.Calculation, true, out CalculationType calculation))
@@ -119,7 +134,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 Severity = severity,
                 Calculation = calculation,
                 TimePeriod = timePeriod,
-                Conditions = conditions
+                Conditions = conditions,
+                Actions = actions
             };
         }
     }
