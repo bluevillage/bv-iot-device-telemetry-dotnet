@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
@@ -16,6 +17,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "Parameters")]
         public IDictionary<String, String> Parameters { get; set; } = new Dictionary<String, String>();
 
+        private IDictionary<TypesOfActions, Func<IActionValidator>> validationMapping = new Dictionary<TypesOfActions, Func<IActionValidator>>()
+            {
+                { TypesOfActions.Email, () => new EmailValidator()}
+            };
+
         public ActionItemApiModel(string act, Dictionary<String, String> parameters)
         {
             this.ActionType = act;
@@ -24,9 +30,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         public ActionItemApiModel(Services.Models.ActionItem act)
         {
-            this.ActionType = act.ActionType.ToString();
-            this.Parameters = act.Parameters;
+            if(this.ValidateActionParameters(act.ActionType, act.Parameters))
+            {
+                this.ActionType = act.ActionType.ToString();
+                this.Parameters = act.Parameters;
+            };
         }
+
 
         public ActionItemApiModel() { }
 
@@ -36,12 +46,42 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             {
                 throw new InvalidInputException($"The action type {this.ActionType} is not valid");
             }
-
-            return new Services.Models.ActionItem()
+            if (this.ValidateActionParameters(act, this.Parameters))
             {
-                ActionType = act,
-                Parameters = this.Parameters
-            };
+                return new ActionItem()
+                {
+                    ActionType = act,
+                    Parameters = this.Parameters
+                };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private bool ValidateActionParameters(TypesOfActions type, IDictionary<String, String> parameters)
+        {
+            try
+            {
+                ActionValidator validator = new ActionValidator()
+                {
+                    ValidationMethod = this.validationMapping[type]()
+                };
+                if (validator.isValid(parameters))
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new InvalidInputException($"Invalid parameters specified for actionType {this.ActionType}");
+
+                }
+            }
+            catch (KeyNotFoundException k)
+            {
+                throw new InvalidInputException($"Invalid Action Type: {this.ActionType}");
+            }
         }
     }
 }
