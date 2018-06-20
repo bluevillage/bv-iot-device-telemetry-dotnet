@@ -52,6 +52,9 @@ namespace Services.Test
 
             // Assert
             Assert.NotEmpty(list);
+
+            // Assert action have been read.
+            Assert.True(this.TestActionItemIsParsedProperly(list));
         }
 
         private void ThereAreNoRulessInStorage()
@@ -72,6 +75,19 @@ namespace Services.Test
                 }
             };
 
+            var sampleActions = new List<ActionItem>
+            {
+                new ActionItem()
+                {
+                    ActionType = TypesOfActions.Email,
+                    Parameters = new Dictionary<string, object>()
+                    {
+                        { "email", new List<string>(){ "sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
+                        { "subject", "Test Email"}
+                    }
+                }
+            };
+
             var sampleRules = new List<Rule>
             {
                 new Rule()
@@ -81,7 +97,8 @@ namespace Services.Test
                     Description = "Sample description 1",
                     GroupId = "Prototyping devices",
                     Severity = SeverityType.Critical,
-                    Conditions = sampleConditions
+                    Conditions = sampleConditions,
+                    Actions = sampleActions 
                 },
                 new Rule()
                 {
@@ -90,12 +107,21 @@ namespace Services.Test
                     Description = "Sample description 2",
                     GroupId =  "Prototyping devices",
                     Severity =  SeverityType.Warning,
-                    Conditions =  sampleConditions
+                    Actions = sampleActions
                 }
             };
 
             this.rules.Setup(x => x.GetListAsync(null, 0, 1000, null))
                 .ReturnsAsync(sampleRules);
+        }
+
+        private bool TestActionItemIsParsedProperly(List<Rule> rules) 
+        {
+            foreach(Rule rule in rules)
+            {
+                if (rule.Actions == null) return false; 
+            }
+            return true;
         }
     }
 }

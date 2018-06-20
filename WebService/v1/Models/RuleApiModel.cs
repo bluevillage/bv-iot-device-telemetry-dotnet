@@ -52,7 +52,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public string TimePeriod { get; set; } = "0";
 
         [JsonProperty(PropertyName = "Actions")]
-        public List<ActionItemApiModel> Actions { get; set; } = new List<ActionItemApiModel>();
+        public List<ActionApiModel> Actions { get; set; } = new List<ActionApiModel>();
 
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public IDictionary<string, string> Metadata => new Dictionary<string, string>
@@ -81,7 +81,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
                 foreach (ActionItem item in rule.Actions)
                 {
-                    this.Actions.Add(new ActionItemApiModel(item));
+                    this.Actions.Add(new ActionApiModel(item));
                 }
 
                 foreach (Condition condition in rule.Conditions)
@@ -101,7 +101,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 conditions.Add(condition.ToServiceModel());
             }
 
-            foreach (ActionItemApiModel act in this.Actions)
+            foreach (ActionApiModel act in this.Actions)
             {
                 actions.Add(act.ToServiceModel());
             }

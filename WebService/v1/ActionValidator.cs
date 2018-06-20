@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public interface IActionValidator
     {
-        bool isValid(IDictionary<String, Object> parameters);
+        bool IsValid(IDictionary<String, Object> parameters);
     }
 
     /// <summary>
@@ -25,16 +26,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         public IActionValidator ValidationMethod { get; set; }
 
-        public bool isValid(IDictionary<String, Object> parameters)
+        public bool IsValid(IDictionary<String, Object> parameters)
         {
             if (ValidationMethod is null)
             {
-                // Throw an exception
                 return false;
             }
             else
             {
-                return this.ValidationMethod.isValid(parameters);
+                return this.ValidationMethod.IsValid(parameters);
             }
         }
     }
@@ -44,7 +44,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public class EmailValidator: IActionValidator
     {
-        public bool isValid(IDictionary<String, Object> parameters)
+        public bool IsValid(IDictionary<String, Object> parameters)
         {
             if (!parameters.ContainsKey("email")) return false;
             IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["email"]).ToObject<List<String>>();
@@ -58,7 +58,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
             }
             catch (FormatException f)
             {
-                // Write exception to logger.
                 return false;
             }
         }

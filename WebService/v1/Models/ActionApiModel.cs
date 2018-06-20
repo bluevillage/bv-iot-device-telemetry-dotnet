@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
-    public class ActionItemApiModel
+    public class ActionApiModel
     {
         [JsonProperty(PropertyName = "Type")]
         public string ActionType { get; set; } = String.Empty;
@@ -22,13 +22,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 { TypesOfActions.Email, () => new EmailValidator()}
             };
 
-        public ActionItemApiModel(string act, Dictionary<String, Object> parameters)
+        public ActionApiModel(string act, Dictionary<String, Object> parameters)
         {
             this.ActionType = act;
             this.Parameters = parameters;
         }
 
-        public ActionItemApiModel(Services.Models.ActionItem act)
+        public ActionApiModel(Services.Models.ActionItem act)
         {
             // Backend to Frontend validation ?
                 this.ActionType = act.ActionType.ToString();
@@ -36,7 +36,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         }
 
 
-        public ActionItemApiModel() { }
+        public ActionApiModel() { }
 
         public ActionItem ToServiceModel()
         {
