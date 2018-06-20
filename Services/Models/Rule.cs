@@ -31,11 +31,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
         public IList<ActionItem> Actions { get; set; } = new List<ActionItem>();
 
-        /*
-         * Property to support a list of emails.
-        public IList<string> EmailAddressList { get; set; } = new List<string>();
-        */
-
         public Rule() { }
 
         public int CompareTo(Rule other)

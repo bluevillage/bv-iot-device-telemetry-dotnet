@@ -53,6 +53,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "TimePeriod")]
         public string TimePeriod { get; set; } = "0";
 
+        [JsonProperty(PropertyName = "Actions")]
+        public List<ActionItemApiModel> Actions { get; set; } = new List<ActionItemApiModel>();
+
         [JsonProperty(PropertyName = "$metadata", Order = 1000)]
         public IDictionary<string, string> Metadata => new Dictionary<string, string>
         {
@@ -90,6 +93,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
                 foreach(ActionItem item in rule.Actions){
+                    this.Actions.Add(new ActionItemApiModel(item));
+                }
+
+                foreach (ActionItem item in rule.Actions)
+                {
                     this.Actions.Add(new ActionItemApiModel(item));
                 }
 
@@ -144,8 +152,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 TimePeriod = timePeriod,
                 Conditions = conditions,
                 Actions = actions
-                // Assign the value of template to the service model.
-                // EmailAddressList = this.EmailAddressList
             };
         }
     }
