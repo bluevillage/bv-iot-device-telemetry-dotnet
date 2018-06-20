@@ -13,7 +13,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public interface IActionValidator
     {
-        bool isValid(IDictionary<String, String> parameters);
+        bool isValid(IDictionary<String, Object> parameters);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         public IActionValidator ValidationMethod { get; set; }
 
-        public bool isValid(IDictionary<String, String> parameters)
+        public bool isValid(IDictionary<String, Object> parameters)
         {
             if (ValidationMethod is null)
             {
@@ -44,13 +44,16 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public class EmailValidator: IActionValidator
     {
-        public bool isValid(IDictionary<String, String> parameters)
+        public bool isValid(IDictionary<String, Object> parameters)
         {
             if (!parameters.ContainsKey("email")) return false;
-            string emailToValidate = parameters["email"];
+            IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["email"]).ToObject<List<String>>();
             try
             {
-                MailAddress email = new MailAddress(emailToValidate);
+                foreach(String emailToValidate in emailListToValidate)
+                {
+                    MailAddress email = new MailAddress(emailToValidate);
+                }
                 return true;
             }
             catch (FormatException f)

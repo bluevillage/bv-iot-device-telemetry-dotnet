@@ -79,7 +79,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
 
-                foreach(ActionItem item in rule.Actions)
+                foreach (ActionItem item in rule.Actions)
                 {
                     this.Actions.Add(new ActionItemApiModel(item));
                 }
@@ -101,7 +101,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 conditions.Add(condition.ToServiceModel());
             }
 
-            foreach(ActionItemApiModel act  in this.Actions)
+            foreach (ActionItemApiModel act in this.Actions)
             {
                 actions.Add(act.ToServiceModel());
             }

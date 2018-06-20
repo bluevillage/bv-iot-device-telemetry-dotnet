@@ -18,7 +18,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public TypesOfActions ActionType { get; set; } = new TypesOfActions();
-        public IDictionary<String, String> Parameters { get; set; } = new Dictionary<String, String>();
+        public IDictionary<String, Object> Parameters { get; set; } = new Dictionary<String, Object>();
         public ActionItem() { }
     }
 

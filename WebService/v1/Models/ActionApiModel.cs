@@ -15,14 +15,14 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public string ActionType { get; set; } = String.Empty;
 
         [JsonProperty(PropertyName = "Parameters")]
-        public IDictionary<String, String> Parameters { get; set; } = new Dictionary<String, String>();
+        public IDictionary<String, Object> Parameters { get; set; } = new Dictionary<String, Object>();
 
         private IDictionary<TypesOfActions, Func<IActionValidator>> validationMapping = new Dictionary<TypesOfActions, Func<IActionValidator>>()
             {
                 { TypesOfActions.Email, () => new EmailValidator()}
             };
 
-        public ActionItemApiModel(string act, Dictionary<String, String> parameters)
+        public ActionItemApiModel(string act, Dictionary<String, Object> parameters)
         {
             this.ActionType = act;
             this.Parameters = parameters;
@@ -46,6 +46,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             }
             if (this.ValidateActionParameters(act, this.Parameters))
             {
+                // Cast email to a list of string.
+                this.Parameters["email"] = ((Newtonsoft.Json.Linq.JArray)this.Parameters["email"]).ToObject<List<String>>();
                 return new ActionItem()
                 {
                     ActionType = act,
@@ -58,7 +60,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             }
         }
 
-        private bool ValidateActionParameters(TypesOfActions type, IDictionary<String, String> parameters)
+        private bool ValidateActionParameters(TypesOfActions type, IDictionary<String, Object> parameters)
         {
             try
             {
