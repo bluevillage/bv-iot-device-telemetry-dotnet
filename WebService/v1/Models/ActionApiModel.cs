@@ -30,11 +30,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         public ActionItemApiModel(Services.Models.ActionItem act)
         {
-            if(this.ValidateActionParameters(act.ActionType, act.Parameters))
-            {
+            // Backend to Frontend validation ?
                 this.ActionType = act.ActionType.ToString();
                 this.Parameters = act.Parameters;
-            };
         }
 
 
