@@ -46,8 +46,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         public bool IsValid(IDictionary<String, Object> parameters)
         {
-            if (!parameters.ContainsKey("email")) return false;
-            IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["email"]).ToObject<List<String>>();
+            if (!(parameters.ContainsKey("Email") || parameters.ContainsKey("email"))) return false;
+            IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<List<String>>();
             try
             {
                 foreach(String emailToValidate in emailListToValidate)

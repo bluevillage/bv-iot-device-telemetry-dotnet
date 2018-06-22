@@ -14,10 +14,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "Type")]
         public string ActionType { get; set; } = String.Empty;
 
+        // Parameters dictionary is Ordinal IgnoreCase to follow CaseInsensitive pattern used by the JsonProperty(PropertyName = ..) match. 
         [JsonProperty(PropertyName = "Parameters")]
-        public IDictionary<String, Object> Parameters { get; set; } = new Dictionary<String, Object>();
+        public IDictionary<String, Object> Parameters { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-        private IDictionary<TypesOfActions, Func<IActionValidator>> validationMapping = new Dictionary<TypesOfActions, Func<IActionValidator>>()
+        public static IDictionary<TypesOfActions, Func<IActionValidator>> validationMapping = new Dictionary<TypesOfActions, Func<IActionValidator>>()
             {
                 { TypesOfActions.Email, () => new EmailValidator()}
             };
@@ -30,7 +31,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         public ActionApiModel(Services.Models.ActionItem act)
         {
-            // Backend to Frontend validation ?
                 this.ActionType = act.ActionType.ToString();
                 this.Parameters = act.Parameters;
         }
@@ -40,14 +40,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         public ActionItem ToServiceModel()
         {
+            // How to cast in this case? 
             if (!Enum.TryParse<TypesOfActions>(this.ActionType, true, out TypesOfActions act))
             {
                 throw new InvalidInputException($"The action type {this.ActionType} is not valid");
             }
-            if (this.ValidateActionParameters(act, this.Parameters))
+            if (ValidateActionParameters(act, this.Parameters))
             {
                 // Cast email to a list of string.
-                this.Parameters["email"] = ((Newtonsoft.Json.Linq.JArray)this.Parameters["email"]).ToObject<List<String>>();
+                this.Parameters["Email"] = ((Newtonsoft.Json.Linq.JArray)this.Parameters["Email"]).ToObject<IList<String>>();
                 return new ActionItem()
                 {
                     ActionType = act,
@@ -56,32 +57,17 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             }
             else
             {
-                return null;
+                throw new InvalidInputException($"Invalid parameters for the specified action Type: {this.ActionType}");
             }
         }
 
-        private bool ValidateActionParameters(TypesOfActions type, IDictionary<String, Object> parameters)
+        public static bool ValidateActionParameters(TypesOfActions type, IDictionary<String, Object> parameters)
         {
-            try
+            ActionValidator validator = new ActionValidator()
             {
-                ActionValidator validator = new ActionValidator()
-                {
-                    ValidationMethod = this.validationMapping[type]()
-                };
-                if (validator.isValid(parameters))
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new InvalidInputException($"Invalid parameters specified for actionType {this.ActionType}");
-
-                }
-            }
-            catch (KeyNotFoundException k)
-            {
-                throw new InvalidInputException($"Invalid Action Type: {this.ActionType}");
-            }
+                ValidationMethod = ActionApiModel.validationMapping[type]()
+            };
+            return validator.IsValid(parameters);
         }
     }
 }
