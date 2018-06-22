@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -79,9 +79,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
 
-                foreach (ActionItem item in rule.Actions)
+                foreach (ActionItem action in rule.Actions)
                 {
-                    this.Actions.Add(new ActionApiModel(item));
+                    this.Actions.Add(new ActionApiModel(action));
                 }
 
                 foreach (Condition condition in rule.Conditions)
@@ -101,9 +101,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 conditions.Add(condition.ToServiceModel());
             }
 
-            foreach (ActionApiModel act in this.Actions)
+            foreach (ActionApiModel action in this.Actions)
             {
-                actions.Add(act.ToServiceModel());
+                actions.Add(action.ToServiceModel());
             }
 
             if (!Enum.TryParse<CalculationType>(this.Calculation, true, out CalculationType calculation))

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Threading.Tasks;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
 {
@@ -42,7 +41,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// <summary>
     /// Email Validator class that uses MailAddress validation.
     /// </summary>
-    public class EmailValidator: IActionValidator
+    public class EmailValidator : IActionValidator
     {
         public Dictionary<string, object> IsValid(IDictionary<String, Object> parameters)
         {
@@ -54,7 +53,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
             try
             {
                 IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<List<String>>();
-                // If emtpy email list, throw exception
                 if (!emailListToValidate.Any())
                 {
                     throw new InvalidInputException("Empty email list for actionType email");
@@ -69,7 +67,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
             catch (FormatException f)
             {
                 throw new InvalidInputException("Invalid Email Parameters.");
-            } catch (InvalidCastException e)
+            }
+            catch (InvalidCastException e)
             {
                 throw new InvalidInputException("String specified for Email parameter for action type Email");
             }

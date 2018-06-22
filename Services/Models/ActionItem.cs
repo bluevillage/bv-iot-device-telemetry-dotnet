@@ -4,8 +4,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 {
@@ -24,7 +22,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 
     public enum TypesOfActions
     {
-        Email,
-        Phone
+        Email
     }
 }

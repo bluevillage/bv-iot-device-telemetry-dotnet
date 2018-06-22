@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
@@ -9,6 +7,8 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter;
 using Moq;
 using Services.Test.helpers;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Services.Test
@@ -38,7 +38,7 @@ namespace Services.Test
             var list = await this.rules.Object.GetListAsync(null, 0, 1000, null);
 
             // Assert
-            Assert.Equal(0, list.Count);
+            Assert.Empty(list);
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
@@ -98,7 +98,7 @@ namespace Services.Test
                     GroupId = "Prototyping devices",
                     Severity = SeverityType.Critical,
                     Conditions = sampleConditions,
-                    Actions = sampleActions 
+                    Actions = sampleActions
                 },
                 new Rule()
                 {
@@ -115,11 +115,11 @@ namespace Services.Test
                 .ReturnsAsync(sampleRules);
         }
 
-        private bool TestActionItemIsParsedProperly(List<Rule> rules) 
+        private bool TestActionItemIsParsedProperly(List<Rule> rules)
         {
-            foreach(Rule rule in rules)
+            foreach (Rule rule in rules)
             {
-                if (rule.Actions == null) return false; 
+                if (rule.Actions == null) return false;
             }
             return true;
         }
