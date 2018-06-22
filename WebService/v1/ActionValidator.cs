@@ -14,7 +14,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public interface IActionValidator
     {
-        bool IsValid(IDictionary<String, Object> parameters);
+        Dictionary<string, object> IsValid(IDictionary<String, Object> parameters);
     }
 
     /// <summary>
@@ -26,11 +26,11 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         public IActionValidator ValidationMethod { get; set; }
 
-        public bool IsValid(IDictionary<String, Object> parameters)
+        public Dictionary<string, object> IsValid(IDictionary<String, Object> parameters)
         {
             if (ValidationMethod is null)
             {
-                return false;
+                throw new InvalidConfigurationException("Validation Method not specified.");
             }
             else
             {
@@ -44,21 +44,34 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public class EmailValidator: IActionValidator
     {
-        public bool IsValid(IDictionary<String, Object> parameters)
+        public Dictionary<string, object> IsValid(IDictionary<String, Object> parameters)
         {
-            if (!(parameters.ContainsKey("Email") || parameters.ContainsKey("email"))) return false;
-            IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<List<String>>();
+            Dictionary<string, object> tempParameters = new Dictionary<string, object>(parameters, StringComparer.OrdinalIgnoreCase);
+            if (!tempParameters.ContainsKey("email"))
+            {
+                throw new InvalidInputException("Email not specified for actionType Email");
+            }
             try
             {
-                foreach(String emailToValidate in emailListToValidate)
+                IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<List<String>>();
+                // If emtpy email list, throw exception
+                if (!emailListToValidate.Any())
+                {
+                    throw new InvalidInputException("Empty email list for actionType email");
+                }
+                foreach (String emailToValidate in emailListToValidate)
                 {
                     MailAddress email = new MailAddress(emailToValidate);
                 }
-                return true;
+                tempParameters["email"] = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<IList<String>>();
+                return tempParameters;
             }
             catch (FormatException f)
             {
-                return false;
+                throw new InvalidInputException("Invalid Email Parameters.");
+            } catch (InvalidCastException e)
+            {
+                throw new InvalidInputException("String specified for Email parameter for action type Email");
             }
         }
     }

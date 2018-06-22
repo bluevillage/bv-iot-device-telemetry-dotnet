@@ -12,7 +12,6 @@ namespace WebService.Test
     public class ActionApiModelEmailTest
     {
         ActionApiModel testActionApiModel;
-        ActionItem testActionItem;
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ThrowInvalidInputException_When_ActionTypeEmailAndInvalidEmailAddress()
@@ -64,7 +63,7 @@ namespace WebService.Test
                         {
                             { "Subject", "Alert Notification" },
                             {"Body", "Chiller pressure is at 250 which is high" },
-                            {"Email", new Newtonsoft.Json.Linq.JArray(){}}
+                            {"Email", new Newtonsoft.Json.Linq.JArray() }
                         }
                     };
                 case EmailActionApiModelType.InvalidEmailAddress:

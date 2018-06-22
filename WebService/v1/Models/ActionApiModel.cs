@@ -45,23 +45,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             {
                 throw new InvalidInputException($"The action type {this.ActionType} is not valid");
             }
-            if (ValidateActionParameters(act, this.Parameters))
+            this.Parameters = ValidateActionParametersAndCastParameters(act, this.Parameters);
+            return new ActionItem()
             {
-                // Cast email to a list of string.
-                this.Parameters["Email"] = ((Newtonsoft.Json.Linq.JArray)this.Parameters["Email"]).ToObject<IList<String>>();
-                return new ActionItem()
-                {
-                    ActionType = act,
-                    Parameters = this.Parameters
-                };
-            }
-            else
-            {
-                throw new InvalidInputException($"Invalid parameters for the specified action Type: {this.ActionType}");
-            }
+                ActionType = act,
+                Parameters = this.Parameters
+            };
         }
 
-        public static bool ValidateActionParameters(TypesOfActions type, IDictionary<String, Object> parameters)
+        public static Dictionary<string, object> ValidateActionParametersAndCastParameters(TypesOfActions type, IDictionary<String, Object> parameters)
         {
             ActionValidator validator = new ActionValidator()
             {
