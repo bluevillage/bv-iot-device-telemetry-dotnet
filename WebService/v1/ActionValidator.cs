@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
 {
@@ -13,7 +13,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public interface IActionValidator
     {
-        Dictionary<string, object> IsValid(IDictionary<String, Object> parameters);
+        IDictionary<string, object> IsValid(IDictionary<String, Object> parameters);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         public IActionValidator ValidationMethod { get; set; }
 
-        public Dictionary<string, object> IsValid(IDictionary<String, Object> parameters)
+        public IDictionary<string, object> IsValid(IDictionary<String, Object> parameters)
         {
             if (ValidationMethod is null)
             {
@@ -43,16 +43,18 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public class EmailValidator : IActionValidator
     {
-        public Dictionary<string, object> IsValid(IDictionary<String, Object> parameters)
+        private const string EMAIL_KEY = "email";
+
+        public IDictionary<string, object> IsValid(IDictionary<String, Object> parameters)
         {
-            Dictionary<string, object> tempParameters = new Dictionary<string, object>(parameters, StringComparer.OrdinalIgnoreCase);
-            if (!tempParameters.ContainsKey("email"))
+            parameters = new Dictionary<string, object>(parameters, StringComparer.OrdinalIgnoreCase);
+            if (!parameters.ContainsKey(EMAIL_KEY))
             {
                 throw new InvalidInputException("Email not specified for actionType Email");
             }
             try
             {
-                IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<List<String>>();
+                IList<String> emailListToValidate = ((Newtonsoft.Json.Linq.JArray)parameters[EMAIL_KEY]).ToObject<List<String>>();
                 if (!emailListToValidate.Any())
                 {
                     throw new InvalidInputException("Empty email list for actionType email");
@@ -61,8 +63,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
                 {
                     MailAddress email = new MailAddress(emailToValidate);
                 }
-                tempParameters["email"] = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<IList<String>>();
-                return tempParameters;
+                parameters[EMAIL_KEY] = ((Newtonsoft.Json.Linq.JArray)parameters[EMAIL_KEY]).ToObject<IList<String>>();
+                return parameters;
             }
             catch (FormatException f)
             {

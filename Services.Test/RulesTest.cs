@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Diagnostics;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
@@ -7,8 +9,6 @@ using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Runtime;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.StorageAdapter;
 using Moq;
 using Services.Test.helpers;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Services.Test
@@ -53,8 +53,18 @@ namespace Services.Test
             // Assert
             Assert.NotEmpty(list);
 
-            // Assert action have been read.
-            Assert.True(this.TestActionItemIsParsedProperly(list));
+            // Assert action has been read.
+            bool isActionReadCorrect = true;
+            foreach (Rule rule in list)
+            {
+                if (rule.Actions == null)
+                {
+                    isActionReadCorrect = false;
+                    break;
+                }
+                isActionReadCorrect = true;
+            }
+            Assert.True(isActionReadCorrect);
         }
 
         private void ThereAreNoRulessInStorage()
@@ -82,8 +92,8 @@ namespace Services.Test
                     ActionType = TypesOfActions.Email,
                     Parameters = new Dictionary<string, object>()
                     {
-                        { "email", new List<string>(){ "sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
-                        { "subject", "Test Email"}
+                        {"email", new List<string>(){"sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
+                        {"subject", "Test Email"}
                     }
                 }
             };
@@ -107,21 +117,13 @@ namespace Services.Test
                     Description = "Sample description 2",
                     GroupId =  "Prototyping devices",
                     Severity =  SeverityType.Warning,
+                    Conditions = sampleConditions,
                     Actions = sampleActions
                 }
             };
 
             this.rules.Setup(x => x.GetListAsync(null, 0, 1000, null))
                 .ReturnsAsync(sampleRules);
-        }
-
-        private bool TestActionItemIsParsedProperly(List<Rule> rules)
-        {
-            foreach (Rule rule in rules)
-            {
-                if (rule.Actions == null) return false;
-            }
-            return true;
         }
     }
 }

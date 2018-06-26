@@ -11,54 +11,54 @@ namespace WebService.Test
 {
     public class ActionApiModelTest
     {
-        ActionApiModel targetActionApiModel;
-        ActionItem testActionItem;
+        ActionApiModel target;
+        ActionItem targetAction;
         public ActionApiModelTest() { }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ReturnActionItemServiceModel_When_ValidActionType()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.ValidActionType);
+            target = this.getActionApiModel(ActionApiModelType.ValidActionType);
 
             // Act 
-            testActionItem = targetActionApiModel.ToServiceModel();
+            targetAction = target.ToServiceModel();
 
             // Assert
-            Assert.NotNull(testActionItem);
+            Assert.NotNull(targetAction);
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ThrowInvalidInputException_When_InvalidActionType()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.InvalidActionType);
+            target = this.getActionApiModel(ActionApiModelType.InvalidActionType);
 
             // Act and Assert
-            Assert.Throws<InvalidInputException>(() => targetActionApiModel.ToServiceModel());
+            Assert.Throws<InvalidInputException>(() => target.ToServiceModel());
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ReturnActionItemServiceModel_When_ValidActionTypeValidParameters()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.ValidParameters);
+            target = this.getActionApiModel(ActionApiModelType.ValidParameters);
 
             // Act 
-            testActionItem = targetActionApiModel.ToServiceModel();
+            targetAction = target.ToServiceModel();
 
             // Assert
-            Assert.NotNull(testActionItem);
+            Assert.NotNull(targetAction);
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void Should_ThrowInvalidInputException_WhenValidActionTypeInvalidParameters()
+        public void Should_ThrowInvalidInputException_WhenValidActionTypeInvalidEmailAddress()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.InvalidParameters);
+            target = this.getActionApiModel(ActionApiModelType.InvalidParameters);
 
             // Act and Assert
-            Assert.Throws<InvalidInputException>(() => targetActionApiModel.ToServiceModel());
+            Assert.Throws<InvalidInputException>(() => target.ToServiceModel());
         }
 
 
@@ -66,30 +66,30 @@ namespace WebService.Test
         public void Should_ThrowInvalidInputException_When_ActionTypeEmailAndInvalidEmailAddress()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.EmailActionTypeInvalidEmailAddress);
+            target = this.getActionApiModel(ActionApiModelType.EmailActionTypeInvalidEmailAddress);
 
             // Act and Assert
-            Assert.Throws<InvalidInputException>(() => targetActionApiModel.ToServiceModel());
+            Assert.Throws<InvalidInputException>(() => target.ToServiceModel());
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ThrowInvalidInputException_When_ActionTypeEmailAndEmailIsNotAList()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.EmailActionTypeEmailNotAList);
+            target = this.getActionApiModel(ActionApiModelType.EmailActionTypeEmailNotAList);
 
             // Act and Assert
-            Assert.Throws<InvalidInputException>(() => targetActionApiModel.ToServiceModel());
+            Assert.Throws<InvalidInputException>(() => target.ToServiceModel());
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ThrowInvalidInputException_When_ActionTypeEmailAndEmptyEmailList()
         {
             // Arrange
-            targetActionApiModel = this.getActionApiModel(ActionApiModelType.EmailActionTypeEmptyList);
+            target = this.getActionApiModel(ActionApiModelType.EmailActionTypeEmptyList);
 
             // Act and Assert
-            Assert.Throws<InvalidInputException>(() => targetActionApiModel.ToServiceModel());
+            Assert.Throws<InvalidInputException>(() => target.ToServiceModel());
         }
 
 
@@ -103,9 +103,9 @@ namespace WebService.Test
                         ActionType = "Invalid ActionType",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
-                            {"Email", new Newtonsoft.Json.Linq.JArray(){"sampleEmail@gmail.com"} }
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
+                            {"Email", new Newtonsoft.Json.Linq.JArray(){"sampleEmail@gmail.com"}}
                         }
                     };
                 case ActionApiModelType.ValidActionType:
@@ -114,8 +114,8 @@ namespace WebService.Test
                         ActionType = "Email",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
                             {"Email", new Newtonsoft.Json.Linq.JArray(){"sampleEmail@gmail.com"}}
                         }
                     };
@@ -125,8 +125,8 @@ namespace WebService.Test
                         ActionType = "Email",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
                             {"Email", new Newtonsoft.Json.Linq.JArray(){"sampleEmailgmail.com"}}
                         }
                     };
@@ -136,8 +136,8 @@ namespace WebService.Test
                         ActionType = "Email",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
                             {"Email", new Newtonsoft.Json.Linq.JArray(){"sampleEmail@gmail.com"}}
                         }
                     };
@@ -147,8 +147,8 @@ namespace WebService.Test
                         ActionType = "Email",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
                             {"Email", "sampleEmail@gmail.com"}
                         }
                     };
@@ -158,8 +158,8 @@ namespace WebService.Test
                         ActionType = "Email",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
                             {"Email", new Newtonsoft.Json.Linq.JArray() }
                         }
                     };
@@ -169,8 +169,8 @@ namespace WebService.Test
                         ActionType = "Email",
                         Parameters = new Dictionary<string, object>()
                         {
-                            { "Subject", "Alert Notification" },
-                            {"Body", "Chiller pressure is at 250 which is high" },
+                            {"Subject", "Alert Notification"},
+                            {"Body", "Chiller pressure is at 250 which is high"},
                             {"Email", new Newtonsoft.Json.Linq.JArray(){"sampleEmailgmail.com"}}
                         }
                     };

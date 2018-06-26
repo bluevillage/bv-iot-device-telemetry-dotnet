@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -17,7 +17,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         [JsonProperty(PropertyName = "Parameters")]
         public IDictionary<String, Object> Parameters { get; set; } = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-        //Maps Types of actions to their Custom validator class.
+        // Maps Types of actions to their custom validator class.
         public static IDictionary<TypesOfActions, Func<IActionValidator>> validationMapping = new Dictionary<TypesOfActions, Func<IActionValidator>>()
             {
                 { TypesOfActions.Email, () => new EmailValidator()}
@@ -35,7 +35,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             this.Parameters = action.Parameters;
         }
 
-
         public ActionApiModel() { }
 
         public ActionItem ToServiceModel()
@@ -44,21 +43,17 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             {
                 throw new InvalidInputException($"The action type {this.ActionType} is not valid");
             }
-            this.Parameters = ValidateActionParametersAndCastParameters(action, this.Parameters);
+            ActionValidator validator = new ActionValidator()
+            {
+                ValidationMethod = ActionApiModel.validationMapping[action]()
+            };
+            // Returns parameters to allow custom casting in implementation.
+            this.Parameters = validator.IsValid(this.Parameters);
             return new ActionItem()
             {
                 ActionType = action,
                 Parameters = this.Parameters
             };
-        }
-
-        public static Dictionary<string, object> ValidateActionParametersAndCastParameters(TypesOfActions type, IDictionary<String, Object> parameters)
-        {
-            ActionValidator validator = new ActionValidator()
-            {
-                ValidationMethod = ActionApiModel.validationMapping[type]()
-            };
-            return validator.IsValid(parameters);
         }
     }
 }
