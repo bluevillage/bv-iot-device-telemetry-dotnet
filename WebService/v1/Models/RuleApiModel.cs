@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Rule = Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Rule;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 {
@@ -58,9 +60,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
             { "$uri", "/" + Version.PATH + "/rules/" + this.Id }
         };
 
+        [JsonProperty(PropertyName = "Deleted", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? Deleted { get; set; }
+
         public RuleApiModel() { }
 
-        public RuleApiModel(Rule rule)
+        public RuleApiModel(Rule rule, bool includeDeleted)
         {
             if (rule != null)
             {
@@ -75,6 +80,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 this.Severity = rule.Severity.ToString();
                 this.Calculation = rule.Calculation.ToString();
                 this.TimePeriod = rule.TimePeriod.ToString();
+                if (includeDeleted)
+                {
+                    this.Deleted = rule.Deleted;
+                }
 
                 foreach (Condition condition in rule.Conditions)
                 {
@@ -106,6 +115,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 throw new InvalidInputException($"The value of 'TimePeriod' - '{this.TimePeriod}' is not valid");
             }
 
+            bool deleted = false;
+            if (this.Deleted.HasValue)
+            {
+                deleted = this.Deleted.Value;
+            }
+
             return new Rule()
             {
                 ETag = this.ETag,
@@ -119,7 +134,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
                 Severity = severity,
                 Calculation = calculation,
                 TimePeriod = timePeriod,
-                Conditions = conditions
+                Conditions = conditions,
+                Deleted = deleted
             };
         }
     }
