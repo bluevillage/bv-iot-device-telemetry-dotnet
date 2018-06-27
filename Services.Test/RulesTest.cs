@@ -85,17 +85,17 @@ namespace Services.Test
                 }
             };
 
-            var sampleActions = new List<ActionItem>
+            var sampleActions = new List<IActionItem>
             {
-                new ActionItem()
-                {
-                    ActionType = TypesOfActions.Email,
-                    Parameters = new Dictionary<string, object>()
-                    {
-                        {"email", new List<string>(){"sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
-                        {"subject", "Test Email"}
-                    }
-                }
+                //new ActionItem()
+                //{
+                //    ActionType = Type.Email,
+                //    Parameters = new Dictionary<string, object>()
+                //    {
+                //        {"email", new List<string>(){"sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
+                //        {"subject", "Test Email"}
+                //    }
+                //}
             };
 
             var sampleRules = new List<Rule>

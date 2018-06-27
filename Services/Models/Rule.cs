@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.JsonConverters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -29,9 +30,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         // Possible values -[60000, 300000, 600000] in milliseconds
         public long TimePeriod { get; set; } = 0;
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
-        public IList<ActionItem> Actions { get; set; } = new List<ActionItem>();
+        [JsonConverter(typeof(ActionConverter))]
+        public IList<IActionItem> Actions { get; set; } = new List<IActionItem>();
 
-        public Rule() { }
+        public Rule(){ }
 
         public int CompareTo(Rule other)
         {

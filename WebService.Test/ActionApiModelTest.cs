@@ -12,7 +12,7 @@ namespace WebService.Test
     public class ActionApiModelTest
     {
         ActionApiModel target;
-        ActionItem targetAction;
+        IActionItem targetAction;
         public ActionApiModelTest() { }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]

@@ -13,7 +13,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     /// </summary>
     public interface IActionValidator
     {
-        IDictionary<string, object> IsValid(IDictionary<String, Object> parameters);
+        IDictionary<string, object> IsValid(IDictionary<String, object> parameters);
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         public IActionValidator ValidationMethod { get; set; }
 
-        public IDictionary<string, object> IsValid(IDictionary<String, Object> parameters)
+        public IDictionary<string, object> IsValid(IDictionary<String, object> parameters)
         {
             if (ValidationMethod is null)
             {
@@ -45,7 +45,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1
     {
         private const string EMAIL_KEY = "email";
 
-        public IDictionary<string, object> IsValid(IDictionary<String, Object> parameters)
+        public IDictionary<string, object> IsValid(IDictionary<String, object> parameters)
         {
             parameters = new Dictionary<string, object>(parameters, StringComparer.OrdinalIgnoreCase);
             if (!parameters.ContainsKey(EMAIL_KEY))
