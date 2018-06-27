@@ -29,7 +29,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         // Possible values -[60000, 300000, 600000] in milliseconds
         public long TimePeriod { get; set; } = 0;
         public IList<Condition> Conditions { get; set; } = new List<Condition>();
-
+        public bool Deleted { get; set; } = false;
         public Rule() { }
 
         public int CompareTo(Rule other)
