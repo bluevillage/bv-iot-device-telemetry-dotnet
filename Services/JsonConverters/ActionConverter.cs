@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,11 +8,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.JsonConverters
 {
     class ActionConverter : JsonConverter
     {
-
         // Maps Types of actions to their Service layer class.
         private static IDictionary<Services.Models.Type, Func<IActionItem>> actionMapping = new Dictionary<Services.Models.Type, Func<IActionItem>>()
             {
-            {Models.Type.Email, () => { return new EmailActionItem(); } }
+                {Models.Type.Email, () => { return new EmailActionItem(); } }
             };
 
         public override bool CanWrite => false;
@@ -29,15 +27,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.JsonConverters
             var jsonArray = JArray.Load(reader);
             var actionItem = default(IActionItem);
             IList<IActionItem> actionItemList = new List<IActionItem>();
-
-            foreach(var jsonObject in jsonArray)
+            foreach (var jsonObject in jsonArray)
             {
                 Enum.TryParse<Services.Models.Type>(jsonObject["ActionType"].Value<string>(), true, out Services.Models.Type action);
                 actionItem = actionMapping[action]();
                 serializer.Populate(jsonObject.CreateReader(), actionItem);
                 actionItemList.Add(actionItem);
             }
-
             return actionItemList;
         }
 

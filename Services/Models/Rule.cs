@@ -33,7 +33,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         [JsonConverter(typeof(ActionConverter))]
         public IList<IActionItem> Actions { get; set; } = new List<IActionItem>();
 
-        public Rule(){ }
+        public Rule() { }
 
         public int CompareTo(Rule other)
         {

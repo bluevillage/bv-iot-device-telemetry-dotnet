@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using System.Linq;
 using System.Net.Mail;
+using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 {
@@ -27,9 +27,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public Type ActionType { get; set; }
-       public string Subject { get; set; }
-       public string Body { get; set; }
-       public List<string> Email { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+        public List<string> Email { get; set; }
 
         public EmailActionItem() { }
 
@@ -50,11 +50,12 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
                 {
                     throw new InvalidInputException("No Email address provided for actionType Email");
                 }
-            } catch (InvalidCastException e)
+            }
+            catch (InvalidCastException e)
             {
                 throw new InvalidInputException("Email field is a list of string");
             }
-                
+
             if (!this.IsValid())
             {
                 throw new InvalidInputException("Invalid Email Address.");
@@ -73,36 +74,25 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 
         private bool IsValid()
         {
-            /*
-              if (!emailListToValidate.Any())
-                {
-                    throw new InvalidInputException("Empty email list for actionType email");
-                }
-                foreach (String emailToValidate in emailListToValidate)
-                {
-                    MailAddress email = new MailAddress(emailToValidate);
-                }
-             */
             try
             {
                 if (!this.Email.Any()) throw new InvalidInputException("Empty email list provided for actionType Email");
-                foreach(string emailToValidate in this.Email)
+                foreach (string emailToValidate in this.Email)
                 {
                     MailAddress mail = new MailAddress(emailToValidate);
                 }
                 return true;
-
-            } catch (FormatException )
+            }
+            catch (FormatException)
             {
                 return false;
-            } catch (InvalidCastException e)
+            }
+            catch (InvalidCastException e)
             {
                 return false;
             }
         }
     }
-
-    
 
     public enum Type
     {
