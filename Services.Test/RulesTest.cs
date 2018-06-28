@@ -90,7 +90,7 @@ namespace Services.Test
                 
                 new EmailActionItem(Type.Email, new Dictionary<string, object>()
                     {
-                        {"email", new List<string>(){"sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
+                        {"email", new Newtonsoft.Json.Linq.JArray(){"sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},
                         {"subject", "Test Email"}
                     })
             };

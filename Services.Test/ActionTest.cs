@@ -15,8 +15,8 @@ namespace Services.Test
             var parameters = new Dictionary<string, object>()
             {
                 {"Subject", "Alert Notification"},
-                { "Body", "Chiller pressure is at 250 which is high"},
-                { "Email", new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com" } }
+                {"Body", "Chiller pressure is at 250 which is high"},
+                {"Email", new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com"} }
             };
 
             // Act 
@@ -33,8 +33,8 @@ namespace Services.Test
             var parameters = new Dictionary<string, object>()
             {
                 {"Subject", "Alert Notification"},
-                { "Body", "Chiller pressure is at 250 which is high"},
-                { "Email", new Newtonsoft.Json.Linq.JArray() { "sampleEmailgmail.com" } }
+                {"Body", "Chiller pressure is at 250 which is high"},
+                {"Email", new Newtonsoft.Json.Linq.JArray() { "sampleEmailgmail.com"} }
             };
 
             // Act and Assert
@@ -48,7 +48,7 @@ namespace Services.Test
             var parameters = new Dictionary<string, object>()
             {
                 {"Subject", "Alert Notification"},
-                { "Body", "Chiller pressure is at 250 which is high"}
+                {"Body", "Chiller pressure is at 250 which is high"}
             };
 
             // Act and Assert
@@ -62,8 +62,8 @@ namespace Services.Test
             var parameters = new Dictionary<string, object>()
             {
                 {"Subject", "Alert Notification"},
-                { "Body", "Chiller pressure is at 250 which is high"},
-                { "Email", "sampleEmail@gmail.com" }
+                {"Body", "Chiller pressure is at 250 which is high"},
+                {"Email", "sampleEmail@gmail.com"}
             };
 
             // Act and Assert
@@ -76,9 +76,9 @@ namespace Services.Test
             // Arrange
             var parameters = new Dictionary<string, object>()
             {
-                { "Subject", "Alert Notification"},
-                { "bOdy", "Chiller pressure is at 250 which is high"},
-                { "eMail", new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com" } }
+                {"Subject", "Alert Notification"},
+                {"bOdy", "Chiller pressure is at 250 which is high"},
+                {"eMail", new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com"} }
             };
 
             // Act 
@@ -97,7 +97,7 @@ namespace Services.Test
 
         private bool IsListOfEmailEqual(IList<string> emailList)
         {
-            var checkList = new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com" };
+            var checkList = new Newtonsoft.Json.Linq.JArray() {"sampleEmail@gmail.com"};
             foreach (var email in checkList)
             {
                 if (!emailList.Contains((string)email)) return false;
