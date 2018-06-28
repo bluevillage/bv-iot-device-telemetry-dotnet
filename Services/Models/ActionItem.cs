@@ -27,8 +27,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public Type ActionType { get; set; }
-        public string Subject { get; set; }
-        public string Body { get; set; }
+        public string Subject { get; set; } = string.Empty;
+        public string Body { get; set; } = string.Empty;
         public List<string> Email { get; set; }
 
         public EmailActionItem() { }
@@ -38,7 +38,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
             parameters = new Dictionary<string, object>(parameters, StringComparer.OrdinalIgnoreCase);
             this.ActionType = type;
             if (parameters.ContainsKey("Subject")) this.Subject = (string)parameters["Subject"];
-            if (parameters.ContainsKey("Body")) this.Body = (string)parameters["Body"];
+            if (parameters.ContainsKey("Template")) this.Body = (string)parameters["Template"];
 
             try
             {
@@ -67,7 +67,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
             return new Dictionary<string, object>()
             {
                 {"Subject", this.Subject},
-                {"Body", this.Body },
+                {"Template", this.Body },
                 {"Email", this.Email }
             };
         }
