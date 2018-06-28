@@ -62,9 +62,8 @@ namespace Services.Test
                     isActionReadCorrect = false;
                     break;
                 }
-                isActionReadCorrect = true;
+                Assert.True(isActionReadCorrect);
             }
-            Assert.True(isActionReadCorrect);
         }
 
         private void ThereAreNoRulessInStorage()
@@ -87,7 +86,6 @@ namespace Services.Test
 
             var sampleActions = new List<IActionItem>
             {
-                
                 new EmailActionItem(Type.Email, new Dictionary<string, object>()
                     {
                         {"email", new Newtonsoft.Json.Linq.JArray(){"sampleEmail@gmail.com", "sampleEmail2@gmail.com"}},

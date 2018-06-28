@@ -12,39 +12,43 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 {
     /// <summary>
     /// Class to enclose all the details of an action. 
-    /// Action Type is an enum which is modified when a new ActionTypeImplementation is added. 
+    /// Action Type is an enum which is modified when a new ActionType Implementation is added. 
     /// Parameters is a Dictionary used to store all the other related info required for an action type.
     /// </summary>
     public interface IActionItem
     {
         [JsonConverter(typeof(StringEnumConverter))]
-        Type ActionType { get; set; }
+        Type Type { get; set; }
 
         Dictionary<string, object> getParameters();
     }
 
     public class EmailActionItem : IActionItem
     {
+        private const string SUBJECT = "Subject";
+        private const string TEMPLATE = "Template";
+        private const string EMAIL = "Email";
+
         [JsonConverter(typeof(StringEnumConverter))]
-        public Type ActionType { get; set; }
+        public Type Type { get; set; }
         public string Subject { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
-        public List<string> Email { get; set; }
+        public List<string> Emails { get; set; }
 
         public EmailActionItem() { }
 
         public EmailActionItem(Type type, IDictionary<string, object> parameters)
         {
             parameters = new Dictionary<string, object>(parameters, StringComparer.OrdinalIgnoreCase);
-            this.ActionType = type;
-            if (parameters.ContainsKey("Subject")) this.Subject = (string)parameters["Subject"];
-            if (parameters.ContainsKey("Template")) this.Body = (string)parameters["Template"];
+            this.Type = type;
+            if (parameters.ContainsKey(SUBJECT)) this.Subject = (string)parameters[SUBJECT];
+            if (parameters.ContainsKey(TEMPLATE)) this.Body = (string)parameters[TEMPLATE];
 
             try
             {
-                if (parameters.ContainsKey("Email"))
+                if (parameters.ContainsKey(EMAIL))
                 {
-                    this.Email = ((Newtonsoft.Json.Linq.JArray)parameters["Email"]).ToObject<List<String>>();
+                    this.Emails = ((Newtonsoft.Json.Linq.JArray)parameters[EMAIL]).ToObject<List<String>>();
                 }
                 else
                 {
@@ -66,9 +70,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         {
             return new Dictionary<string, object>()
             {
-                {"Subject", this.Subject},
-                {"Template", this.Body },
-                {"Email", this.Email }
+                {SUBJECT, this.Subject},
+                {TEMPLATE, this.Body },
+                {EMAIL, this.Emails }
             };
         }
 
@@ -76,8 +80,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
         {
             try
             {
-                if (!this.Email.Any()) throw new InvalidInputException("Empty email list provided for actionType Email");
-                foreach (string emailToValidate in this.Email)
+                if (!this.Emails.Any()) throw new InvalidInputException("Empty email list provided for actionType Email");
+                foreach (string emailToValidate in this.Emails)
                 {
                     MailAddress mail = new MailAddress(emailToValidate);
                 }

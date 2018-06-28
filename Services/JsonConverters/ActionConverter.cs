@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Microsoft. All rights reserved.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Newtonsoft.Json;
@@ -11,7 +13,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.JsonConverters
         // Maps Types of actions to their Service layer class.
         private static IDictionary<Services.Models.Type, Func<IActionItem>> actionMapping = new Dictionary<Services.Models.Type, Func<IActionItem>>()
             {
-                {Models.Type.Email, () => { return new EmailActionItem();}}
+                { Models.Type.Email, () => { return new EmailActionItem(); } }
             };
 
         public override bool CanWrite => false;
@@ -39,7 +41,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.JsonConverters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new InvalidOperationException("Use Default serialization");
+            throw new InvalidOperationException("Use default serialization");
         }
     }
 }

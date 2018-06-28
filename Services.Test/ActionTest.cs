@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft. All rights reserved.
+
+using System.Collections.Generic;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Exceptions;
 using Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models;
 using Services.Test.helpers;
@@ -8,15 +10,23 @@ namespace Services.Test
 {
     public class ActionTest
     {
+        private const string PARAM_TEMPLATE = "Chiller pressure is at 250 which is high";
+        private const string PARAM_SUBJECT = "Alert Notification";
+        private const string PARAM_EMAIL = "sampleEmail@gmail.com";
+        private const string PARAM_SUBJECT_KEY = "Subjec";
+        private const string PARAM_TEMPLATE_KEY = "Template";
+        private const string PARAM_EMAIL_KEY = "Email";
+
+
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
         public void Should_ReturnActionModel_When_ValidActionType()
         {
             // Arrange
             var parameters = new Dictionary<string, object>()
             {
-                {"Subject", "Alert Notification"},
-                {"Body", "Chiller pressure is at 250 which is high"},
-                {"Email", new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com"} }
+                {PARAM_SUBJECT_KEY, PARAM_SUBJECT},
+                {PARAM_TEMPLATE_KEY, PARAM_TEMPLATE},
+                {PARAM_EMAIL_KEY, new Newtonsoft.Json.Linq.JArray() { PARAM_EMAIL} }
             };
 
             // Act 
@@ -32,9 +42,9 @@ namespace Services.Test
             // Arrange
             var parameters = new Dictionary<string, object>()
             {
-                {"Subject", "Alert Notification"},
-                {"Body", "Chiller pressure is at 250 which is high"},
-                {"Email", new Newtonsoft.Json.Linq.JArray() { "sampleEmailgmail.com"} }
+                {PARAM_SUBJECT_KEY, PARAM_SUBJECT},
+                {PARAM_TEMPLATE_KEY, PARAM_TEMPLATE},
+                {PARAM_EMAIL_KEY, new Newtonsoft.Json.Linq.JArray() { "sampleEmailgmail.com"} }
             };
 
             // Act and Assert
@@ -47,8 +57,8 @@ namespace Services.Test
             // Arrange
             var parameters = new Dictionary<string, object>()
             {
-                {"Subject", "Alert Notification"},
-                {"Body", "Chiller pressure is at 250 which is high"}
+                {PARAM_SUBJECT_KEY, PARAM_SUBJECT},
+                {PARAM_TEMPLATE_KEY, PARAM_TEMPLATE}
             };
 
             // Act and Assert
@@ -61,9 +71,9 @@ namespace Services.Test
             // Arrange
             var parameters = new Dictionary<string, object>()
             {
-                {"Subject", "Alert Notification"},
-                {"Body", "Chiller pressure is at 250 which is high"},
-                {"Email", "sampleEmail@gmail.com"}
+                {PARAM_SUBJECT_KEY, PARAM_SUBJECT},
+                {PARAM_TEMPLATE_KEY, PARAM_TEMPLATE},
+                {PARAM_EMAIL_KEY, PARAM_EMAIL}
             };
 
             // Act and Assert
@@ -76,9 +86,9 @@ namespace Services.Test
             // Arrange
             var parameters = new Dictionary<string, object>()
             {
-                {"Subject", "Alert Notification"},
-                {"bOdy", "Chiller pressure is at 250 which is high"},
-                {"eMail", new Newtonsoft.Json.Linq.JArray() { "sampleEmail@gmail.com"} }
+                {PARAM_SUBJECT_KEY, PARAM_SUBJECT},
+                {"tEmPlate", PARAM_TEMPLATE},
+                {"eMail", new Newtonsoft.Json.Linq.JArray() { PARAM_EMAIL} }
             };
 
             // Act 
@@ -90,14 +100,14 @@ namespace Services.Test
 
         private bool IsEmailActionItemReadProperly(EmailActionItem emailActionItem)
         {
-            return emailActionItem.ActionType == Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Type.Email
-                && string.Equals(emailActionItem.Body, "Chiller pressure is at 250 which is high")
-                && this.IsListOfEmailEqual(emailActionItem.Email);
+            return emailActionItem.Type == Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Type.Email
+                && string.Equals(emailActionItem.Body, PARAM_TEMPLATE)
+                && this.IsListOfEmailEqual(emailActionItem.Emails);
         }
 
         private bool IsListOfEmailEqual(IList<string> emailList)
         {
-            var checkList = new Newtonsoft.Json.Linq.JArray() {"sampleEmail@gmail.com"};
+            var checkList = new Newtonsoft.Json.Linq.JArray() {PARAM_EMAIL};
             foreach (var email in checkList)
             {
                 if (!emailList.Contains((string)email)) return false;

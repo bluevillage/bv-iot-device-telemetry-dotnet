@@ -22,9 +22,9 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         // Maps Types of actions to their Service layer class.
         private static IDictionary<Services.Models.Type, ActionItemMap> validationMapping = new Dictionary<Services.Models.Type, ActionItemMap>()
-            {
+        {
             {Services.Models.Type.Email, (Services.Models.Type type, IDictionary<string, object> param) => { return new EmailActionItem(type, param); } }
-            };
+        };
 
         public ActionApiModel(string action, Dictionary<string, object> parameters)
         {
@@ -34,7 +34,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
 
         public ActionApiModel(Services.Models.IActionItem action)
         {
-            this.ActionType = action.ActionType.ToString();
+            this.ActionType = action.Type.ToString();
             this.Parameters = action.getParameters();
         }
 
