@@ -106,7 +106,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-            string sql = QueryBuilder.GetDocumentsSql(
+            var sql = QueryBuilder.GetDocumentsSql(
                 ALARM_SCHEMA_KEY,
                 null, null,
                 from, MESSAGE_RECEIVED_KEY,
@@ -149,7 +149,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
             int limit,
             string[] devices)
         {
-            string sql = QueryBuilder.GetDocumentsSql(
+            var sql = QueryBuilder.GetDocumentsSql(
                 ALARM_SCHEMA_KEY,
                 id, RULE_ID_KEY,
                 from, MESSAGE_RECEIVED_KEY,
@@ -195,7 +195,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
         {
             // build sql query to get open/acknowledged alarm count for rule
             string[] statusList = { ALARM_STATUS_OPEN, ALARM_STATUS_ACKNOWLEDGED };
-            string sql = QueryBuilder.GetCountSql(
+            var sql = QueryBuilder.GetCountSql(
                 ALARM_SCHEMA_KEY,
                 id, RULE_ID_KEY,
                 from, MESSAGE_RECEIVED_KEY,
@@ -242,12 +242,18 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services
                 throw new InvalidInputException("id contains illegal characters.");
             }
 
+            var query = new SqlQuerySpec(
+                "SELECT * FROM c WHERE c.id=@id",
+                new SqlParameterCollection(new SqlParameter[] {
+                    new SqlParameter { Name = "@id", Value = id }
+                })
+            );
             // Retrieve the document using the DocumentClient.
             List<Document> documentList = this.storageClient.QueryDocuments(
                 this.databaseName,
                 this.collectionId,
                 null,
-                "SELECT * FROM c WHERE c.id='" + id + "'",
+                query,
                 0,
                 DOC_QUERY_LIMIT);
 
