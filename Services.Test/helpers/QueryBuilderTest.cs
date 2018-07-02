@@ -18,31 +18,67 @@ namespace Services.Test.helpers
 
             // Act
             var querySpec = QueryBuilder.GetDocumentsSql(
-                "alarms",
-                "chiller-01",
-                "deviceId",
+                "alarm",
+                "bef978d4-54f6-429f-bda5-db2494b833ef",
+                "rule.id",
                 from,
-                "fromProperty",
+                "device.msg.received",
                 to,
-                "toProperty",
+                "device.msg.received",
                 "asc",
-                "deviceId",
+                "device.msg.received",
                 0,
                 100,
-                new string[] { "chiller-01" },
-                "deviceId");
+                new string[] { "chiller-01.0", "chiller-02.0" },
+                "device.id");
 
             // Assert
-            Assert.Equal($"SELECT TOP @top * FROM c WHERE (c[\"doc.schema\"] = @schemaName AND c[@devicesProperty] IN @devices AND c[@byIdPropertyName] = @byId AND c[@fromProperty] >= {from.ToUnixTimeMilliseconds()} AND c[@toProperty] <= {to.ToUnixTimeMilliseconds()}) ORDER BY c[@orderProperty] ASC", querySpec.QueryText);
+            Assert.Equal($"SELECT TOP @top * FROM c WHERE (c[\"doc.schema\"] = @schemaName AND c['device.id'] IN ('chiller-01.0', 'chiller-02.0') AND c[@byIdProperty] = @byId AND c[@fromProperty] >= {from.ToUnixTimeMilliseconds()} AND c[@toProperty] <= {to.ToUnixTimeMilliseconds()}) ORDER BY c[@orderProperty] ASC", querySpec.QueryText);
             Assert.Equal(100, querySpec.Parameters[0].Value);
-            Assert.Equal("alarms", querySpec.Parameters[1].Value);
-            Assert.Equal("deviceId", querySpec.Parameters[2].Value);
-            Assert.Equal(new string[] { "chiller-01" }, querySpec.Parameters[3].Value);
-            Assert.Equal("deviceId", querySpec.Parameters[4].Value);
-            Assert.Equal("chiller-01", querySpec.Parameters[5].Value);
-            Assert.Equal("fromProperty", querySpec.Parameters[6].Value);
-            Assert.Equal("toProperty", querySpec.Parameters[7].Value);
-            Assert.Equal("deviceId", querySpec.Parameters[8].Value);
+            Assert.Equal("alarm", querySpec.Parameters[1].Value);
+            Assert.Equal("device.id", querySpec.Parameters[2].Value);
+            Assert.Equal(new String[] { "chiller-01.0", "chiller-02.0" }, querySpec.Parameters[3].Value);
+            Assert.Equal("rule.id", querySpec.Parameters[4].Value);
+            Assert.Equal("bef978d4-54f6-429f-bda5-db2494b833ef", querySpec.Parameters[5].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[6].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[7].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[8].Value);
+        }
+
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
+        public void GetDocumentsSqlWithNullIdPropertyTest()
+        {
+            // Arrange
+            var from = DateTimeOffset.Now.AddHours(-1);
+            var to = DateTimeOffset.Now;
+
+            // Act
+            var querySpec = QueryBuilder.GetDocumentsSql(
+                "alarm",
+                null,
+                null,
+                from,
+                "device.msg.received",
+                to,
+                "device.msg.received",
+                "asc",
+                "device.msg.received",
+                0,
+                100,
+                new string[] { "chiller-01.0", "chiller-02.0" },
+                "device.id");
+
+            // Assert
+            Assert.Equal($"SELECT TOP @top * FROM c WHERE (c[\"doc.schema\"] = @schemaName AND c['device.id'] IN ('chiller-01.0', 'chiller-02.0') AND c[@fromProperty] >= {from.ToUnixTimeMilliseconds()} AND c[@toProperty] <= {to.ToUnixTimeMilliseconds()}) ORDER BY c[@orderProperty] ASC", querySpec.QueryText);
+            Assert.Equal(100, querySpec.Parameters[0].Value);
+            Assert.Equal("alarm", querySpec.Parameters[1].Value);
+            Assert.Equal("device.id", querySpec.Parameters[2].Value);
+            Assert.Equal(new String[] { "chiller-01.0", "chiller-02.0" }, querySpec.Parameters[3].Value);
+            Assert.Null(querySpec.Parameters[4].Value);
+            Assert.Null(querySpec.Parameters[5].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[6].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[7].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[8].Value);
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
@@ -55,17 +91,17 @@ namespace Services.Test.helpers
             // Assert
             Assert.Throws<InvalidInputException>(() => QueryBuilder.GetDocumentsSql(
                 "alarm's",
-                "chiller-01",
-                "deviceId",
+                "bef978d4-54f6-429f-bda5-db2494b833ef",
+                "rule.id",
                 from,
-                "fromProperty",
+                "device.msg.received",
                 to,
-                "toProperty",
+                "device.msg.received",
                 "asc",
-                "deviceId",
+                "device.msg.received",
                 0,
                 100,
-                new string[] { "chiller-01" },
+                new string[] { "chiller-01.0", "chiller-02.0" },
                 "deviceId"));
         }
 
@@ -78,29 +114,63 @@ namespace Services.Test.helpers
 
             // Act
             var querySpec = QueryBuilder.GetCountSql(
-                "alarms",
-                "chiller-01",
-                "deviceId",
+                "alarm",
+                "bef978d4-54f6-429f-bda5-db2494b833ef",
+                "rule.id",
                 from,
-                "fromProperty",
+                "device.msg.received",
                 to,
-                "toProperty",
-                new string[] { "chiller-01" },
-                "deviceId",
-                new string[] { "warning", "critical" },
-                "Severty");
+                "device.msg.received",
+                new string[] { "chiller-01.0", "chiller-02.0" },
+                "device.id",
+                new string[] { "open", "acknowledged" },
+                "status");
 
             // Assert
-            Assert.Equal($"SELECT VALUE COUNT(1) FROM c WHERE (c[\"doc.schema\"] = @schemaName AND c[@devicesProperty] IN @devices AND c[@byIdProperty] = @byId AND c[@fromProperty] >= {from.ToUnixTimeMilliseconds()} AND c[@toProperty] <= {to.ToUnixTimeMilliseconds()} AND c[@filterProperty] IN @filterValues)", querySpec.QueryText);
-            Assert.Equal("alarms", querySpec.Parameters[0].Value);
-            Assert.Equal("deviceId", querySpec.Parameters[1].Value);
-            Assert.Equal(new string[] { "chiller-01" }, querySpec.Parameters[2].Value);
-            Assert.Equal("deviceId", querySpec.Parameters[3].Value);
-            Assert.Equal("chiller-01", querySpec.Parameters[4].Value);
-            Assert.Equal("fromProperty", querySpec.Parameters[5].Value);
-            Assert.Equal("toProperty", querySpec.Parameters[6].Value);
-            Assert.Equal("Severty", querySpec.Parameters[7].Value);
-            Assert.Equal(new string[] { "warning", "critical" }, querySpec.Parameters[8].Value);
+            Assert.Equal($"SELECT VALUE COUNT(1) FROM c WHERE (c[\"doc.schema\"] = @schemaName AND c['device.id'] IN ('chiller-01.0', 'chiller-02.0') AND c[@byIdProperty] = @byId AND c[@fromProperty] >= {from.ToUnixTimeMilliseconds()} AND c[@toProperty] <= {to.ToUnixTimeMilliseconds()} AND c['status'] IN ('open', 'acknowledged'))", querySpec.QueryText);
+            Assert.Equal("alarm", querySpec.Parameters[0].Value);
+            Assert.Equal("device.id", querySpec.Parameters[1].Value);
+            Assert.Equal(new String[] { "chiller-01.0", "chiller-02.0" }, querySpec.Parameters[2].Value);
+            Assert.Equal("rule.id", querySpec.Parameters[3].Value);
+            Assert.Equal("bef978d4-54f6-429f-bda5-db2494b833ef", querySpec.Parameters[4].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[5].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[6].Value);
+            Assert.Equal("status", querySpec.Parameters[7].Value);
+            Assert.Equal(new string[] { "open", "acknowledged" }, querySpec.Parameters[8].Value);
+        }
+
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
+        public void GetCountSqlWithNullIdPropertyTest()
+        {
+            // Arrange
+            var from = DateTimeOffset.Now.AddHours(-1);
+            var to = DateTimeOffset.Now;
+
+            // Act
+            var querySpec = QueryBuilder.GetCountSql(
+                "alarm",
+                null,
+                null,
+                from,
+                "device.msg.received",
+                to,
+                "device.msg.received",
+                new string[] { "chiller-01.0", "chiller-02.0" },
+                "device.id",
+                new string[] { "open", "acknowledged" },
+                "status");
+
+            // Assert
+            Assert.Equal($"SELECT VALUE COUNT(1) FROM c WHERE (c[\"doc.schema\"] = @schemaName AND c['device.id'] IN ('chiller-01.0', 'chiller-02.0') AND c[@fromProperty] >= {from.ToUnixTimeMilliseconds()} AND c[@toProperty] <= {to.ToUnixTimeMilliseconds()} AND c['status'] IN ('open', 'acknowledged'))", querySpec.QueryText);
+            Assert.Equal("alarm", querySpec.Parameters[0].Value);
+            Assert.Equal("device.id", querySpec.Parameters[1].Value);
+            Assert.Equal(new String[] { "chiller-01.0", "chiller-02.0" }, querySpec.Parameters[2].Value);
+            Assert.Null(querySpec.Parameters[3].Value);
+            Assert.Null(querySpec.Parameters[4].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[5].Value);
+            Assert.Equal("device.msg.received", querySpec.Parameters[6].Value);
+            Assert.Equal("status", querySpec.Parameters[7].Value);
+            Assert.Equal(new string[] { "open", "acknowledged" }, querySpec.Parameters[8].Value);
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
@@ -112,17 +182,17 @@ namespace Services.Test.helpers
 
             // Assert
             Assert.Throws<InvalidInputException>(() => QueryBuilder.GetCountSql(
-                "alarms",
+                "alarm",
                 "'chiller-01' or 1=1",
-                "deviceId",
+                "rule.id",
                 from,
-                "fromProperty",
+                "device.msg.received",
                 to,
-                "toProperty",
-                new string[] { "chiller-01" },
-                "deviceId",
-                new string[] { "warning", "critical" },
-                "Severty"));
+                "device.msg.received",
+                new string[] { "chiller-01.0", "chiller-02.0" },
+                "device.id",
+                new string[] { "open", "acknowledged" },
+                "status"));
         }
     }
 }

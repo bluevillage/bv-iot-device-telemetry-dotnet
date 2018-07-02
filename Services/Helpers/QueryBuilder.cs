@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Azure.Documents;
@@ -15,7 +16,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
         public static SqlQuerySpec GetDocumentsSql(
             string schemaName,
             string byId,
-            string byIdPropertyName,
+            string byIdProperty,
             DateTimeOffset? from,
             string fromProperty,
             DateTimeOffset? to,
@@ -29,8 +30,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
         {
             // check for illegate characters in input
             ValidateInput(ref schemaName);
-            ValidateInput(ref byId);
-            ValidateInput(ref byIdPropertyName);
             ValidateInput(ref fromProperty);
             ValidateInput(ref toProperty);
             ValidateInput(ref orderProperty);
@@ -40,12 +39,15 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             if (devices.Length > 0)
             {
-                queryBuilder.Append(" AND c[@devicesProperty] IN @devices");
+                // SQL Parameters doesn't support IN clause
+                queryBuilder.Append($" AND c['{devicesProperty}'] IN ('{string.Join("', '", devices)}')");
             }
 
-            if (byId != null)
+            if (!string.IsNullOrEmpty(byId) && !string.IsNullOrEmpty(byIdProperty))
             {
-                queryBuilder.Append(" AND c[@byIdPropertyName] = @byId");
+                ValidateInput(ref byId);
+                ValidateInput(ref byIdProperty);
+                queryBuilder.Append(" AND c[@byIdProperty] = @byId");
             }
 
             if (from.HasValue)
@@ -79,7 +81,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
                     new SqlParameter { Name = "@schemaName", Value = schemaName },
                     new SqlParameter { Name = "@devicesProperty", Value = devicesProperty },
                     new SqlParameter { Name = "@devices", Value = devices },
-                    new SqlParameter { Name = "@byIdPropertyName", Value = byIdPropertyName },
+                    new SqlParameter { Name = "@byIdProperty", Value = byIdProperty },
                     new SqlParameter { Name = "@byId", Value = byId},
                     new SqlParameter { Name = "@fromProperty", Value = fromProperty},
                     new SqlParameter { Name = "@toProperty", Value = toProperty},
@@ -98,12 +100,10 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] devices,
             string devicesProperty,
             string[] filterValues,
-            string filterProperty) 
+            string filterProperty)
         {
             // check for illegate characters in input
             ValidateInput(ref schemaName);
-            ValidateInput(ref byId);
-            ValidateInput(ref byIdProperty);
             ValidateInput(ref fromProperty);
             ValidateInput(ref toProperty);
             ValidateInput(ref devicesProperty);
@@ -117,11 +117,13 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             if (devices.Length > 0)
             {
-                queryBuilder.Append(" AND c[@devicesProperty] IN @devices");
+                queryBuilder.Append($" AND c['{devicesProperty}'] IN ('{string.Join("', '", devices)}')");
             }
 
-            if (byId != null)
+            if (!string.IsNullOrEmpty(byId) && !string.IsNullOrEmpty(byIdProperty))
             {
+                ValidateInput(ref byId);
+                ValidateInput(ref byIdProperty);
                 queryBuilder.Append(" AND c[@byIdProperty] = @byId");
             }
 
@@ -141,7 +143,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
 
             if (filterValues.Length > 0)
             {
-                queryBuilder.Append(" AND c[@filterProperty] IN @filterValues");
+                queryBuilder.Append($" AND c['{filterProperty}'] IN ('{string.Join("', '", filterValues)}')");
             }
 
             queryBuilder.Append(")");
@@ -150,7 +152,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
                 new SqlParameterCollection(new SqlParameter[] {
                     new SqlParameter { Name = "@schemaName", Value = schemaName },
                     new SqlParameter { Name = "@devicesProperty", Value = devicesProperty },
-                    new SqlParameter { Name = "@devices", Value = devices},
+                    new SqlParameter { Name = "@devices", Value = devices },
                     new SqlParameter { Name = "@byIdProperty", Value = byIdProperty },
                     new SqlParameter { Name = "@byId", Value = byId },
                     new SqlParameter { Name = "@fromProperty", Value = fromProperty },
