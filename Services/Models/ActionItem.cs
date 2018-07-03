@@ -31,10 +31,26 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
 
         [JsonConverter(typeof(StringEnumConverter))]
         public Type Type { get; set; }
+        [JsonIgnore]
         public string Subject { get; set; } = string.Empty;
+        [JsonIgnore]
         public string Body { get; set; } = string.Empty;
+        [JsonIgnore]
         public List<string> Emails { get; set; }
 
+        // Dictionary to serialize and store in the dictionary.
+        public Dictionary<string, object> Parameters
+        {
+            get
+            {
+                return new Dictionary<string, object>()
+                {
+                    {"Subject", this.Subject },
+                    {"Body", this.Body },
+                    {"Emails", this.Emails }
+                };
+            }
+        }
         public EmailActionItem() { }
 
         public EmailActionItem(Type type, IDictionary<string, object> parameters)
