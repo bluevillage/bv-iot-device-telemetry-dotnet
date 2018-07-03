@@ -46,7 +46,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
                 return new Dictionary<string, object>()
                 {
                     {"Subject", this.Subject },
-                    {"Body", this.Body },
+                    {"Template", this.Body },
                     {"Email", this.Emails }
                 };
             }
