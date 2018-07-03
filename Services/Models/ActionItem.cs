@@ -47,7 +47,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models
                 {
                     {"Subject", this.Subject },
                     {"Body", this.Body },
-                    {"Emails", this.Emails }
+                    {"Email", this.Emails }
                 };
             }
         }
