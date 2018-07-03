@@ -10,7 +10,7 @@ namespace Services.Test.helpers
     public class QueryBuilderTest
     {
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void GetDocumentsSqlTest()
+        public void GetDocumentsSql_WithValidInput()
         {
             // Arrange
             var from = DateTimeOffset.Now.AddHours(-1);
@@ -47,7 +47,7 @@ namespace Services.Test.helpers
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void GetDocumentsSqlWithNullIdPropertyTest()
+        public void GetDocumentsSql_WithNullIdProperty()
         {
             // Arrange
             var from = DateTimeOffset.Now.AddHours(-1);
@@ -82,7 +82,7 @@ namespace Services.Test.helpers
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void GetDocumentsSqlWithInvalidInputTest()
+        public void FailToGetDocumentsSql_WithInvalidInput()
         {
             // Arrange
             var from = DateTimeOffset.Now.AddHours(-1);
@@ -106,7 +106,7 @@ namespace Services.Test.helpers
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void GetCountSqlTest()
+        public void GetCountSql_WithValidInput()
         {
             // Arrange
             var from = DateTimeOffset.Now.AddHours(-1);
@@ -142,7 +142,7 @@ namespace Services.Test.helpers
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void GetCountSqlWithNullIdPropertyTest()
+        public void GetCountSql_WithNullIdProperty()
         {
             // Arrange
             var from = DateTimeOffset.Now.AddHours(-1);
@@ -176,7 +176,7 @@ namespace Services.Test.helpers
         }
 
         [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
-        public void GetCountSqlWithInvalidInputTest()
+        public void FailToGetCountSql_WithInvalidInput()
         {
             // Arrange
             var from = DateTimeOffset.Now.AddHours(-1);

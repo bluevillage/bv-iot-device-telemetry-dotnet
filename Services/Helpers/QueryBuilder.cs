@@ -29,7 +29,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] devices,
             string devicesProperty)
         {
-            // check for illegate characters in input
             ValidateInput(ref schemaName);
             ValidateInput(ref fromProperty);
             ValidateInput(ref toProperty);
@@ -106,7 +105,6 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             string[] filterValues,
             string filterProperty)
         {
-            // check for illegate characters in input
             ValidateInput(ref schemaName);
             ValidateInput(ref fromProperty);
             ValidateInput(ref toProperty);
@@ -174,6 +172,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             return new SqlQuerySpec(queryBuilder.ToString(), sqlParameterCollection);
         }
 
+        // Check illegal characters in input
         private static void ValidateInput(ref string input)
         {
             input = input.Trim();
@@ -184,6 +183,8 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Helpers
             }
         }
 
+        // Convert SQL IN clause parameter into a list of SqlParameter instances naming by original name
+        // and values index because Cosmos DB doesn't natively support string array as one SqlParameter.
         private static IEnumerable<SqlParameter> ConvertToSqlParameters(string name, string[] values)
         {
             return values.Select((value, index) => new SqlParameter { Name = $"@{name}{index}", Value = value });
