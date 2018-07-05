@@ -101,8 +101,8 @@ namespace Services.Test
         private bool IsEmailActionItemReadProperly(EmailActionItem emailActionItem)
         {
             return emailActionItem.Type == Microsoft.Azure.IoTSolutions.DeviceTelemetry.Services.Models.Type.Email
-                && string.Equals(emailActionItem.Body, PARAM_TEMPLATE)
-                && this.IsListOfEmailEqual(emailActionItem.Emails);
+                && string.Equals(emailActionItem.Parameters[PARAM_TEMPLATE_KEY], PARAM_TEMPLATE)
+                && this.IsListOfEmailEqual((List<string>)emailActionItem.Parameters[PARAM_EMAIL_KEY]);
         }
 
         private bool IsListOfEmailEqual(IList<string> emailList)

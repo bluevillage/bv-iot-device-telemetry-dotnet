@@ -35,7 +35,7 @@ namespace Microsoft.Azure.IoTSolutions.DeviceTelemetry.WebService.v1.Models
         public ActionApiModel(Services.Models.IActionItem action)
         {
             this.ActionType = action.Type.ToString();
-            this.Parameters = action.getParameters();
+            this.Parameters = action.Parameters;
         }
 
         public ActionApiModel() { }
