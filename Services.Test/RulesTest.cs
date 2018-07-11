@@ -215,8 +215,6 @@ namespace Services.Test
             this.storageAdapter.Verify(x => x.GetAllAsync(It.IsAny<string>()), Times.Once);
         }
 
-
-
         /**
          * If GetListAsync() is called with includeDeleted = true, verify 
          * deleted rules will be returned
@@ -250,6 +248,44 @@ namespace Services.Test
             // Assert
             Assert.Single(rulesList);
             this.storageAdapter.Verify(x => x.GetAllAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        /**
+          * If upsert is called with a rule that is not created and a 
+          * specified Id, it should be created with that Id.
+        */
+        [Fact, Trait(Constants.TYPE, Constants.UNIT_TEST)]
+        public async Task UpsertNewRuleWithId_CreatesNewRuleWithId()
+        {
+            // Arrange
+            string newRuleId = "TESTRULEID" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            Rule test = new Rule
+            {
+                Enabled = true,
+                Id = newRuleId
+            };
+
+            string ruleString = JsonConvert.SerializeObject(test);
+
+            ValueApiModel result = new ValueApiModel
+            {
+                Data = ruleString,
+                ETag = "1234",
+                Key = newRuleId
+            };
+
+            this.storageAdapter
+                .Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(new ResourceNotFoundException());
+
+            this.storageAdapter.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(result));
+
+            // Act
+            Rule rule = await this.rules.UpsertIfNotDeletedAsync(test);
+
+            // Assert
+            Assert.Equal(newRuleId, rule.Id);
         }
 
         private void ThereAreNoRulessInStorage()
